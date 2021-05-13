@@ -1,0 +1,27 @@
+{
+    "x":0,
+    "type":"Scene",
+    "selectedBox":2,
+    "selecteID":3,
+    "searchKey":"Scene",
+    "props":{"width":1200,"sceneColor":"#000000","runtime":"script/UIMainUI.ts","height":800},
+    "nodeParent":-1,
+    "maxID":4,
+    "label":"Scene",
+    "isOpen":true,
+    "isDirectory":false,
+    "isAniNode":true,
+    "hasChild":false,
+    "compId":2,
+    "child":[
+        ],
+    "animations":[
+        {
+            "nodes":[
+                ],
+            "name":"ani1",
+            "id":1,
+            "frameRate":24,
+            "action":0
+        }]
+}

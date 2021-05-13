@@ -1,0 +1,7 @@
+<page>
+   <item name="test/TestScene.scene" props="" ifExport="分离模式" aName=""/>
+   <item name="Rocker.scene" props="" ifExport="分离模式" aName=""/>
+   <item name="UIMain.scene" props="" ifExport="分离模式" aName=""/>
+   <item name="Loading.scene" props="" ifExport="分离模式" aName=""/>
+   <item name="Video.scene" props="" ifExport="分离模式" aName=""/>
+</page>

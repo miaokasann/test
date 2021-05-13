@@ -1,0 +1,1 @@
+{"type":"Scene","props":{"width":600,"runtime":"script/VideoUI.ts","height":400},"compId":2,"child":[{"type":"Image","props":{"x":493,"width":32,"var":"btn_close","top":32,"skin":"comp/btn_close.png","height":90},"compId":3}],"loadList":["comp/btn_close.png"],"loadList3D":[]}

@@ -1,0 +1,4 @@
+<res>
+   <item name="UI/progress_loading.png" type="ProgressBar" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="comp/progress.png" type="ProgressBar" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+</res>
