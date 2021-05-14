@@ -28,7 +28,9 @@ export default class videoControlScript extends Laya.Script {
         video.setAttribute("preload", "auto"),
         video.setAttribute("width", "100%"),
         video.setAttribute("height", "100%"),
+        video.setAttribute("autoplay", "true"),
         video.style.zInddex = Laya.Render.canvas.style.zIndex + 1,
+        
         video.type = "vedio/mp4",
         video.src = e,
         div.appendChild(video)

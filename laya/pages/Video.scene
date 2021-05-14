@@ -4,7 +4,7 @@
     "selectedBox":2,
     "selecteID":3,
     "searchKey":"Scene",
-    "props":{"width":600,"sceneColor":"#000000","runtime":"script/VideoUI.ts","height":400},
+    "props":{"zOrder":100,"width":600,"sceneColor":"#000000","runtime":"script/VideoUI.ts","height":400},
     "nodeParent":-1,
     "maxID":9,
     "label":"Scene",

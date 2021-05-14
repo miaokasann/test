@@ -11,6 +11,8 @@ export default class Video extends ui.VideoUI {
     super();
   }
   public onAwake(): void {
+    console.log(this)
+
     this.width = Laya.stage.width
     this.videoWin.pos((Laya.stage.width - this.videoWin.width) / 2, this.videoWin.y)
     this.btn_close.on(Laya.Event.MOUSE_DOWN, this, this.onCloseClick)
@@ -19,6 +21,22 @@ export default class Video extends ui.VideoUI {
     this.videoWin.x = this.width / 2 - this.videoWin.width / 2
     this.videoWin.y = this.height / 2 - this.videoWin.height / 2
     this.videoCtl = this.videoWin.addComponent(videoControlScript)
+
+    // // 设置画布上的对齐参照物
+    // let reference: Laya.Sprite = new Laya.Sprite();
+    // Laya.stage.addChild(reference);
+    // reference.pos(0, 0);
+    // reference.size(Laya.stage.width, Laya.stage.height);
+    // reference.graphics.drawRect(0, 0, reference.width, reference.height, "rgba(0,0,0,.4)");
+
+    // function fitDOM() {
+    //   Laya.Utils.fitDOMElementInArea(this.videoWin, reference, 0, 0, reference.width, reference.height);
+    // }
+
+    // fitDOM();
+
+    // // 每次舞台尺寸变更时，都会调用Utils.fitDOMElementInArea设置Video的位置，对齐的位置和refence重合
+    // Laya.stage.on(Laya.Event.RESIZE, this, fitDOM);
   }
   public createVideo(e):void {
       this.videoCtl.creatVideo(e)

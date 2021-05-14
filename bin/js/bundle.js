@@ -178,6 +178,7 @@ var laya = (function () {
                 video.setAttribute("preload", "auto"),
                 video.setAttribute("width", "100%"),
                 video.setAttribute("height", "100%"),
+                video.setAttribute("autoplay", "true"),
                 video.style.zInddex = Laya.Render.canvas.style.zIndex + 1,
                 video.type = "vedio/mp4",
                 video.src = e,
@@ -215,6 +216,7 @@ var laya = (function () {
             super();
         }
         onAwake() {
+            console.log(this);
             this.width = Laya.stage.width;
             this.videoWin.pos((Laya.stage.width - this.videoWin.width) / 2, this.videoWin.y);
             this.btn_close.on(Laya.Event.MOUSE_DOWN, this, this.onCloseClick);
