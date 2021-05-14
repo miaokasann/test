@@ -33,6 +33,7 @@ export module ui {
     REG("ui.UIMainUI",UIMainUI);
     export class VideoUI extends Scene {
 		public btn_close:Laya.Image;
+		public videoWin:Laya.Sprite;
         constructor(){ super()}
         createChildren():void {
             super.createChildren();
@@ -40,14 +41,4 @@ export module ui {
         }
     }
     REG("ui.VideoUI",VideoUI);
-}
-export module ui.test {
-    export class TestSceneUI extends Scene {
-        constructor(){ super()}
-        createChildren():void {
-            super.createChildren();
-            this.loadScene("test/TestScene");
-        }
-    }
-    REG("ui.test.TestSceneUI",TestSceneUI);
 }

@@ -1,6 +1,7 @@
 /*
 * name;
 */
+
 export default class ConstEvent{
 
     public static turnSpeed:number;
@@ -12,6 +13,8 @@ export default class ConstEvent{
 	public static cameraRotate:Laya.Vector3;
 
     public static scene:Laya.Scene;
+
+    public static video:any;
 
     constructor(){}    
 }

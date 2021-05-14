@@ -4,12 +4,14 @@ import JoyStick from "./script/RockerUI";
 import CameraControlScript from './CameraControlScript';
 import constValue from './ConstEvent';
 import kefuCharacterControl from './kefuCharacterControl';
+import Video from './script/VideoUI';
 
 export default class Main {
 	/*3D摄像机*/
 	public camera:Laya.Camera;
 	/*摇杆控制器*/
 	public static rocker:JoyStick;
+	public static video:Video;
 	public scene:Laya.Scene3D;
 
 	private changeActionButton:Laya.Button;
@@ -82,11 +84,12 @@ export default class Main {
 	PreloadingRes(){
 		//预加载所有资源
 		var resource = [
-			"res/LayaScene_aaa/Conventional/aaa.ls",
+			"res/LayaScene_changjing/Conventional/changjing.ls",
 			"res/threeDimen/skinModel/LayaMonkey/Assets/LayaMonkey/LayaMonkey-LayaMonkey.lm",
 			"res/threeDimen/skinModel/LayaMonkey/Assets/LayaMonkey/Materials/T_Diffuse.lmat",
 			"res/threeDimen/skyBox/skyBox2/SkyBox2.lmat",
-			"res/atlas/kefu2d.png"
+			"res/atlas/kefu2d.png",
+			"res/atlas/play.jpg"
 		];
 		Laya.loader.create(resource, Laya.Handler.create(this, this.on3DComplete));	
 	}
@@ -94,25 +97,24 @@ export default class Main {
 	private on3DComplete():void{
 		//加载完成获取到了Scene3d，把他放到舞台上
 		this.scene = Laya.stage.addChild(Laya.Loader.getRes("res/LayaScene_changjing/Conventional/changjing.ls")) as Laya.Scene3D;
-
+		console.log(this.scene)
 		//设置场景环境光
 		this.scene.ambientColor = new Laya.Vector3(0.6, 0, 0);
 
 		//获取场景中的摄像机
-		this.camera = this.scene.getChildByName("Camera") as Laya.Camera;
-
+		this.camera = this.scene.getChildByName("Main Camera") as Laya.Camera;
 		//调整相机位置
-		this.camera.transform.translate(new Laya.Vector3(0,0,-10))
+		// this.camera.transform.translate(new Laya.Vector3(0,0,-10))
 		//设置相机横纵比
-		this.camera.aspectRatio = 0;
-		//设置相机近距裁剪
-		this.camera.nearPlane = 0.1;
-		//设置相机远距裁剪
-		this.camera.farPlane = 1000;
-		//相机设置清除标记
-		this.camera.clearFlag = Laya.BaseCamera.CLEARFLAG_SKY;
-		//设置摄像机视野范围（角度）
-		this.camera.fieldOfView = 70;
+		// this.camera.aspectRatio = 0;
+		// //设置相机近距裁剪
+		// this.camera.nearPlane = 0.1;
+		// //设置相机远距裁剪
+		// this.camera.farPlane = 1000;
+		// //相机设置清除标记
+		// this.camera.clearFlag = Laya.BaseCamera.CLEARFLAG_SKY;
+		// //设置摄像机视野范围（角度）
+		// this.camera.fieldOfView = 70;
 
 		this.camera.enableHDR = false; 
 
@@ -133,22 +135,22 @@ export default class Main {
 		// light.diffuseColor = new Laya.Vector3(0.3, 0.3, 0.3);
 
 
-		var cube = this.scene.getChildAt(0) as Laya.Sprite3D;
+		// var cube = this.scene.getChildAt(0) as Laya.Sprite3D;
 
-		var cub1 = cube.getChildByName('Box119');
-		var cub2 = this.scene.getChildByName('dimian');
-		var cub3 = cube.getChildByName('Plane030');
+		var cub1 = this.scene.getChildByName('zhanguan');
+		var cub2 = cub1.getChildByName('dimianl');
+		var cub3 = cub1.getChildByName('dianshi');
 
-		//设置碰撞
-    //获取物理碰撞器
-    var cubeCollider:Laya.PhysicsCollider = cub1.getComponent(Laya.PhysicsCollider);
+		// //设置碰撞
+    // //获取物理碰撞器
+    // var cubeCollider:Laya.PhysicsCollider = cub1.getComponent(Laya.PhysicsCollider);
 		var cubeCollider2:Laya.PhysicsCollider = cub2.getComponent(Laya.PhysicsCollider);
 		var cubeCollider3:Laya.PhysicsCollider = cub3.getComponent(Laya.PhysicsCollider);
 
-		//物理碰撞体设置摩擦力
-		cubeCollider.friction = 2;
-		//物理碰撞体设置弹力
-		cubeCollider.restitution = 0.3;
+		// //物理碰撞体设置摩擦力
+		// cubeCollider.friction = 2;
+		// //物理碰撞体设置弹力
+		// cubeCollider.restitution = 0.3;
 
 		//物理碰撞体设置摩擦力
 		cubeCollider2.friction = 2;
@@ -158,6 +160,9 @@ export default class Main {
 		cubeCollider3.friction = 2;
 		//物理碰撞体设置弹力
 		cubeCollider3.restitution = 0.3;
+
+		constValue.video = new Video()
+
 
 		//实例化一个遥杆
 		Main.rocker = new JoyStick(Laya.stage)
@@ -186,13 +191,34 @@ export default class Main {
 		
 		//设置材质颜色（不需要）
 		// earthMat._Color = new Laya.Vector4(0, 0, 0, 0.1);
-		var kefu = this.scene.addChild(new Laya.MeshSprite3D(Laya.PrimitiveMesh.createQuad(8 * (kefuMat.albedoTexture.width / kefuMat.albedoTexture.height), 8))) as Laya.MeshSprite3D;
-		kefu.transform.translate(new Laya.Vector3(-5, 5.3, 30));
+		var kefu = this.scene.addChild(new Laya.MeshSprite3D(Laya.PrimitiveMesh.createQuad(0.6, 1.7))) as Laya.MeshSprite3D;//0.8 * (kefuMat.albedoTexture.width / kefuMat.albedoTexture.height)
+		kefu.transform.translate(new Laya.Vector3(-1, 1, 2.3));
 		kefu.meshRenderer.material = kefuMat;
 		//添加朝向摄像机脚本
 		kefu.addComponent(kefuCharacterControl).init(this.camera,false)
 
+		// //添加视频播放按钮
+		// var anniuMat = new Laya.UnlitMaterial();
+		// anniuMat.albedoTexture = Laya.Loader.getRes("res/atlas/play.jpg");
+		// anniuMat.albedoIntensity = 1;
+		// //设置背景透明
+		// anniuMat.alphaTest = true;
+		// anniuMat.alphaTestValue = 0.6;
+		// anniuMat.renderQueue = Laya.Material.RENDERQUEUE_ALPHATEST
+		// var anniu = this.scene.addChild(new Laya.MeshSprite3D(Laya.PrimitiveMesh.createQuad(0.6, 0.6))) as Laya.MeshSprite3D;//0.8 * (kefuMat.albedoTexture.width / kefuMat.albedoTexture.height)
+		// anniu.transform.translate(new Laya.Vector3(0.1, 1.8, -2.4));
+		// anniu.meshRenderer.material = anniuMat;
 
+		// //平面添加物理碰撞体组件
+		// var planeStaticCollider:Laya.PhysicsCollider = anniu.addComponent(Laya.PhysicsCollider);
+		// // //创建盒子形状碰撞器
+		// // var planeShape:Laya.BoxColliderShape = new Laya.BoxColliderShape(10, 0, 10);
+		// // //物理碰撞体设置形状
+		// // planeStaticCollider.colliderShape = planeShape;
+		// //物理碰撞体设置摩擦力
+		// planeStaticCollider.friction = 2;
+		// //物理碰撞体设置弹力
+		// planeStaticCollider.restitution = 0.3;
 
 		// //创建一个精灵
 		// this.sprite3D = new Laya.Sprite3D();
@@ -217,35 +243,35 @@ export default class Main {
 		// }));
 	
 
-		// this.addMouseEvent()
+		this.addMouseEvent()
 		
 		//游戏帧循环
 		Laya.timer.frameLoop(100,this,this.onFrameLoop);
 	}
 
-	// public addMouseEvent():void{
-	// 	//鼠标事件监听
-	// 	Laya.stage.on(Laya.Event.MOUSE_DOWN,this, this.onMouseDown);
-	// }
-	// public onMouseDown():void {
-	// 	if(JoyStick._isTouchMove) return;
-	// 	this.posX = this.point.x = Laya.MouseManager.instance.mouseX;
-	// 	this.posY = this.point.y = Laya.MouseManager.instance.mouseY;
-	// 	//产生射线
-	// 	this.camera.viewportPointToRay(this.point,this._ray);
-	// 	//拿到射线碰撞的物体
-	// 	this.scene.physicsSimulation.rayCast(this._ray,this.outs);
-	// 	//如果碰撞到物体
-	// 	if (this.outs )
-	// 	{
-	// 		console.log(this.outs)
-	// 		console.log(this.outs.point)
-	// 		console.log(this.camera.transform.position)
-	// 		// constValue.cameraTranslate = new Laya.Vector3(1,0,1);
-	// 		this.moveRight(this.outs.point.x - this.camera.transform.position.x)
-	// 		this.moveForward(this.outs.point.z - this.camera.transform.position.z)
-	// 	}
-	// }
+	public addMouseEvent():void{
+		//鼠标事件监听
+		Laya.stage.on(Laya.Event.MOUSE_DOWN,this, this.onMouseDown);
+	}
+	public onMouseDown():void {
+		if(JoyStick._isTouchMove) return;
+		this.posX = this.point.x = Laya.MouseManager.instance.mouseX;
+		this.posY = this.point.y = Laya.MouseManager.instance.mouseY;
+		//产生射线
+		this.camera.viewportPointToRay(this.point,this._ray);
+		//拿到射线碰撞的物体
+		this.scene.physicsSimulation.rayCast(this._ray,this.outs);
+		//如果碰撞到物体
+		if (this.outs)
+		{
+			if(this.outs.collider.owner.name == 'dianshiqiang') {
+				constValue.video = new Video()
+				Laya.stage.addChild(constValue.video);
+				let url = 'https://2dhall-video.ciftis.org/trans-video/20200813/08b05b19efc64b498ca7124746505234.mp4'
+				constValue.video.createVideo(url)
+			}
+		}
+	}
 	/**
      * 向前移动。
      */

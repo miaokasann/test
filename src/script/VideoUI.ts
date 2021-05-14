@@ -18,7 +18,7 @@ export default class Video extends ui.VideoUI {
     // u.registerScaleListener(this.btn_next, this, this.onNextBtnClick, 1.2, !0),
     this.videoWin.x = this.width / 2 - this.videoWin.width / 2
     this.videoWin.y = this.height / 2 - this.videoWin.height / 2
-    this.videoCtl = this.videoWin.getComponent(videoControlScript)
+    this.videoCtl = this.videoWin.addComponent(videoControlScript)
   }
   public createVideo(e):void {
       this.videoCtl.creatVideo(e)

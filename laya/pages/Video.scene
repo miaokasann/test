@@ -6,7 +6,7 @@
     "searchKey":"Scene",
     "props":{"width":600,"sceneColor":"#000000","runtime":"script/VideoUI.ts","height":400},
     "nodeParent":-1,
-    "maxID":4,
+    "maxID":9,
     "label":"Scene",
     "isOpen":true,
     "isDirectory":true,
@@ -18,13 +18,27 @@
             "x":15,
             "type":"Image",
             "searchKey":"Image,btn_close",
-            "props":{"x":493,"width":32,"var":"btn_close","top":32,"skin":"comp/btn_close.png","height":90},
+            "props":{"zOrder":1,"x":480,"width":37,"var":"btn_close","top":19,"skin":"comp/close.png","height":34},
             "nodeParent":2,
             "label":"btn_close",
             "isDirectory":false,
             "isAniNode":true,
             "hasChild":false,
             "compId":3,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Sprite",
+            "searchKey":"Sprite,videoWin",
+            "props":{"y":32,"x":103,"width":394,"var":"videoWin","rotation":0,"height":220},
+            "nodeParent":2,
+            "label":"videoWin",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":8,
             "child":[
                 ]
         }],

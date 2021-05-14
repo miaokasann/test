@@ -1,5 +1,6 @@
 import constValue from './ConstEvent';
 import JoyStick from './script/RockerUI'
+import Video from './script/VideoUI';
 
 export default class CameraControlScript extends Laya.Script3D {
     /**最大滑动距离（超过距离则显示操纵杆） */
@@ -24,7 +25,7 @@ export default class CameraControlScript extends Laya.Script3D {
 
     private camera:Laya.Camera;
 
-    private moveSpeed:number = 6;
+    private moveSpeed:number = 2;
 
     private clickMovePassedTime:number;
     private clickMoveTimer:number;
@@ -43,6 +44,8 @@ export default class CameraControlScript extends Laya.Script3D {
 	public _outHitResult:Laya.HitResult = new Laya.HitResult();
 	// public outs:Array<Laya.HitResult> = new Array<Laya.HitResult>();
 	public outs:Laya.HitResult = new Laya.HitResult();
+
+    public video:Video;
 
     /*摇杆控制器*/
     constructor() { 
@@ -98,7 +101,7 @@ export default class CameraControlScript extends Laya.Script3D {
             //拿到射线碰撞的物体
             this.camera.parent.scene.physicsSimulation.rayCast(this._ray,this.outs);
             //如果碰撞到物体
-            if (this.outs.succeeded && this.outs.collider.owner.name == "dimian")
+            if (this.outs.succeeded && this.outs.collider.owner.name == "dimianl")
             {   
                 if(this.touchMove != undefined && !this.touchMove) {
                     console.log(this.outs.point)
@@ -116,6 +119,9 @@ export default class CameraControlScript extends Laya.Script3D {
                 } else {
                     constValue.cameraTranslate = new Laya.Vector3(0,0,0);
                 }
+            }
+            if (this.outs.succeeded && this.outs.collider.owner.name == "dianshi") {
+              debugger
             }
             // this.clickMovePassedTime += elapsedTime * 0.001
             // var distance = Laya.Vector3.distance(this.outs.point, this.camera.transform.position)
