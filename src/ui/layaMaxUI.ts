@@ -34,6 +34,7 @@ export module ui {
     export class VideoUI extends Scene {
 		public btn_close:Laya.Image;
 		public videoWin:Laya.Sprite;
+		public videoBg:Laya.Sprite;
         constructor(){ super()}
         createChildren():void {
             super.createChildren();

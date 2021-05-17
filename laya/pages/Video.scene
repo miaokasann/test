@@ -2,11 +2,11 @@
     "x":0,
     "type":"Scene",
     "selectedBox":2,
-    "selecteID":3,
+    "selecteID":9,
     "searchKey":"Scene",
     "props":{"zOrder":100,"width":600,"sceneColor":"#000000","runtime":"script/VideoUI.ts","height":400},
     "nodeParent":-1,
-    "maxID":9,
+    "maxID":10,
     "label":"Scene",
     "isOpen":true,
     "isDirectory":true,
@@ -39,6 +39,20 @@
             "isAniNode":true,
             "hasChild":false,
             "compId":8,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Sprite",
+            "searchKey":"Sprite,videoBg",
+            "props":{"y":0,"x":0,"var":"videoBg"},
+            "nodeParent":2,
+            "label":"videoBg",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":9,
             "child":[
                 ]
         }],

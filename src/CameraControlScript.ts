@@ -92,7 +92,7 @@ export default class CameraControlScript extends Laya.Script3D {
                 speedX = speedZ = 0;
                 constValue.cameraTranslate = new Laya.Vector3(speedX,0,speedZ);
             }
-        } else if (!isNaN(this.lastMouseX) && !isNaN(this.lastMouseY) && this.isMouseDown && !JoyStick._isTouchMove && !constValue.isTurning) {
+        } else if (!isNaN(this.lastMouseX) && !isNaN(this.lastMouseY) && this.isMouseDown && !JoyStick._isTouchMove && !constValue.isClickVideoBtn) {
             //鼠标点击 摇杆以外区域
             this.posX = this.point.x = Laya.MouseManager.instance.mouseX;
             this.posY = this.point.y = Laya.MouseManager.instance.mouseY;
@@ -120,9 +120,9 @@ export default class CameraControlScript extends Laya.Script3D {
                     constValue.cameraTranslate = new Laya.Vector3(0,0,0);
                 }
             }
-            if (this.outs.succeeded && this.outs.collider.owner.name == "dianshi") {
-              debugger
-            }
+            // if (this.outs.succeeded && this.outs.collider.owner.name == "dianshi") {
+            //   debugger
+            // }
             // this.clickMovePassedTime += elapsedTime * 0.001
             // var distance = Laya.Vector3.distance(this.outs.point, this.camera.transform.position)
             // this.clickMoveTimer = distance / this.moveSpeed
@@ -137,10 +137,12 @@ export default class CameraControlScript extends Laya.Script3D {
 		
             this.lastMouseX = Laya.stage.mouseX;
             this.lastMouseY = Laya.stage.mouseY;
-        } else if(constValue.isTurning) {
-            constValue.cameraRotate = new Laya.Vector3(0,.001 * elapsedTime * constValue.turnSpeed,0);
-            constValue.cameraTranslate = new Laya.Vector3(0,0,0);
-        } else {
+        } 
+        // else if(constValue.isTurning) {
+        //     constValue.cameraRotate = new Laya.Vector3(0,.001 * elapsedTime * constValue.turnSpeed,0);
+        //     constValue.cameraTranslate = new Laya.Vector3(0,0,0);
+        // } 
+        else {
             Laya.KeyBoardManager.hasKeyDown(87) && this.moveForward(-0.001 * elapsedTime);//W
 			Laya.KeyBoardManager.hasKeyDown(83) && this.moveForward(0.001 * elapsedTime);//S
 			Laya.KeyBoardManager.hasKeyDown(65) && this.moveRight(-0.001 * elapsedTime);//A

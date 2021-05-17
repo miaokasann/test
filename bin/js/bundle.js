@@ -152,6 +152,10 @@ var laya = (function () {
         }
     }
 
+    class ConstEvent {
+        constructor() { }
+    }
+
     class videoControlScript extends Laya.Script {
         constructor() {
             super();
@@ -169,11 +173,11 @@ var laya = (function () {
             let video = Laya.Browser.createElement("video");
             video.setAttribute("id", "myvideo"),
                 this.videoElement = video,
-                video.controls = !0,
-                video.setAttribute("webkit-playsinline", !0),
-                video.setAttribute("playsinline", !0),
+                video.controls = true,
+                video.setAttribute("webkit-playsinline", true),
+                video.setAttribute("playsinline", true),
                 video.setAttribute("x5-video-player-type", "h5"),
-                video.setAttribute("x-webkit-airplay", !0),
+                video.setAttribute("x-webkit-airplay", true),
                 video.setAttribute("x5-video-orientation", "portrait"),
                 video.setAttribute("preload", "auto"),
                 video.setAttribute("width", "100%"),
@@ -183,10 +187,6 @@ var laya = (function () {
                 video.type = "vedio/mp4",
                 video.src = e,
                 div.appendChild(video);
-            var cMask = new Laya.Sprite();
-            cMask.graphics.drawCircle(80, 80, 50, "#ff0000");
-            cMask.pos(120, 50);
-            video.mask = cMask;
         }
         playVideo(e) {
             null != this.videoElement && (this.videoElement.pause(),
@@ -208,6 +208,7 @@ var laya = (function () {
         myClear() {
             console.log(Laya.Browser.document.body.hasChildNodes(this.divElement));
             null != this.divElement && Laya.Browser.document.body.hasChildNodes(this.divElement) && Laya.Browser.document.body.removeChild(this.divElement);
+            ConstEvent.isClickVideoBtn = false;
         }
     }
 
@@ -219,10 +220,20 @@ var laya = (function () {
             console.log(this);
             this.width = Laya.stage.width;
             this.videoWin.pos((Laya.stage.width - this.videoWin.width) / 2, this.videoWin.y);
+            this.btn_close.pos(((Laya.stage.width - this.videoWin.width) / 2) + this.videoWin.width, this.videoWin.y);
             this.btn_close.on(Laya.Event.MOUSE_DOWN, this, this.onCloseClick);
             this.videoWin.x = this.width / 2 - this.videoWin.width / 2;
             this.videoWin.y = this.height / 2 - this.videoWin.height / 2;
+            console.log('videoWin.x', this.videoWin.x);
+            console.log('videoWin.y', this.videoWin.y);
             this.videoCtl = this.videoWin.addComponent(videoControlScript);
+            this.videoBg.pos(0, 0);
+            this.videoBg.size(Laya.stage.width, Laya.stage.height);
+            this.videoBg.graphics.drawRect(0, 0, this.videoBg.width, this.videoBg.height, "rgba(0,0,0,.4)");
+            this.videoBg.on(Laya.Event.MOUSE_DOWN, this, this.mouseHandler);
+        }
+        mouseHandler() {
+            ConstEvent.isClickVideoBtn = true;
         }
         createVideo(e) {
             this.videoCtl.creatVideo(e);
@@ -233,6 +244,7 @@ var laya = (function () {
             this.videoCtl.creatVideo(e[0]);
         }
         onCloseClick() {
+            ConstEvent.isClickVideoBtn = true;
             null != this.videoCtl && this.videoCtl.myClear();
             this.destroy();
             this.videoCtl = null;
@@ -263,10 +275,6 @@ var laya = (function () {
     GameConfig.physicsDebug = false;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
-
-    class ConstEvent {
-        constructor() { }
-    }
 
     class CameraControlScript extends Laya.Script3D {
         constructor() {
@@ -319,7 +327,7 @@ var laya = (function () {
                     ConstEvent.cameraTranslate = new Laya.Vector3(speedX, 0, speedZ);
                 }
             }
-            else if (!isNaN(this.lastMouseX) && !isNaN(this.lastMouseY) && this.isMouseDown && !JoyStick._isTouchMove && !ConstEvent.isTurning) {
+            else if (!isNaN(this.lastMouseX) && !isNaN(this.lastMouseY) && this.isMouseDown && !JoyStick._isTouchMove && !ConstEvent.isClickVideoBtn) {
                 this.posX = this.point.x = Laya.MouseManager.instance.mouseX;
                 this.posY = this.point.y = Laya.MouseManager.instance.mouseY;
                 this.camera.viewportPointToRay(this.point, this._ray);
@@ -337,9 +345,6 @@ var laya = (function () {
                         ConstEvent.cameraTranslate = new Laya.Vector3(0, 0, 0);
                     }
                 }
-                if (this.outs.succeeded && this.outs.collider.owner.name == "dianshi") {
-                    debugger;
-                }
                 var offsetX = Laya.stage.mouseX - this.lastMouseX;
                 var offsetY = Laya.stage.mouseY - this.lastMouseY;
                 var yprElem = this.yawPitchRoll;
@@ -348,10 +353,6 @@ var laya = (function () {
                 this.updateRotation();
                 this.lastMouseX = Laya.stage.mouseX;
                 this.lastMouseY = Laya.stage.mouseY;
-            }
-            else if (ConstEvent.isTurning) {
-                ConstEvent.cameraRotate = new Laya.Vector3(0, .001 * elapsedTime * ConstEvent.turnSpeed, 0);
-                ConstEvent.cameraTranslate = new Laya.Vector3(0, 0, 0);
             }
             else {
                 Laya.KeyBoardManager.hasKeyDown(87) && this.moveForward(-0.001 * elapsedTime);
@@ -470,7 +471,7 @@ var laya = (function () {
             ConstEvent.cameraTranslate = new Laya.Vector3;
             ConstEvent.cameraRotate = new Laya.Vector3;
             ConstEvent.turnSpeed = 0;
-            ConstEvent.isTurning = false;
+            ConstEvent.isClickVideoBtn = false;
             this._ray = new Laya.Ray(new Laya.Vector3(0, 0, 0), new Laya.Vector3(0, 0, 0));
         }
         onVersionLoaded() {
@@ -513,13 +514,6 @@ var laya = (function () {
             Laya.stage.addChild(Main.rocker);
             Main.rocker.x = 25;
             Main.rocker.y = Laya.stage.height - 120;
-            this.addButton(Laya.stage.width - 80, Laya.stage.height - 100, 10, 10, "→", function (e) {
-                e.stopPropagation();
-                this.beginTurn(true);
-            }, function (e) {
-                e.stopPropagation();
-                this.stopTurn();
-            });
             var kefuMat = new Laya.UnlitMaterial();
             kefuMat.albedoTexture = Laya.Loader.getRes("res/atlas/kefu2d.png");
             kefuMat.albedoIntensity = 1;
@@ -544,7 +538,7 @@ var laya = (function () {
             this.camera.viewportPointToRay(this.point, this._ray);
             this.scene.physicsSimulation.rayCast(this._ray, this.outs);
             if (this.outs) {
-                if (this.outs.collider.owner.name == 'dianshiqiang') {
+                if (this.outs.collider.owner.name == 'dianshiqiang' && !ConstEvent.isClickVideoBtn) {
                     ConstEvent.video = new Video();
                     Laya.stage.addChild(ConstEvent.video);
                     let url = 'https://2dhall-video.ciftis.org/trans-video/20200813/08b05b19efc64b498ca7124746505234.mp4';
@@ -561,28 +555,6 @@ var laya = (function () {
             this._tempVector3.z = 0;
             this._tempVector3.x = distance;
             this.camera.transform.translate(this._tempVector3);
-        }
-        beginTurn(isLeft) {
-            ConstEvent.turnSpeed = isLeft ? -50 : 50,
-                ConstEvent.isTurning = true;
-            this.changeActionButton.scale(1.2, 1.2);
-        }
-        stopTurn() {
-            ConstEvent.isTurning = false;
-            this.changeActionButton.scale(1, 1);
-        }
-        addButton(x, y, width, height, text, clikFun, stopClick) {
-            Laya.loader.load(["res/threeDimen/ui/button.png"], Laya.Handler.create(this, function () {
-                this.changeActionButton = Laya.stage.addChild(new Laya.Button("res/threeDimen/ui/button.png", text));
-                this.changeActionButton.size(width, height);
-                this.changeActionButton.labelBold = true;
-                this.changeActionButton.labelSize = 10;
-                this.changeActionButton.sizeGrid = "4,4,4,4";
-                this.changeActionButton.scale(Laya.Browser.pixelRatio, Laya.Browser.pixelRatio);
-                this.changeActionButton.pos(x, y);
-                this.changeActionButton.on(Laya.Event.MOUSE_DOWN, this, clikFun);
-                this.changeActionButton.on(Laya.Event.MOUSE_UP, this, stopClick);
-            }));
         }
         onFrameLoop() {
             this.camera.transform.translate(ConstEvent.cameraTranslate, false);
