@@ -98,7 +98,50 @@
 						0
 					]
 				},
-				"components":[],
+				"components":[
+					{
+						"type":"Rigidbody3D",
+						"mass":1,
+						"isKinematic":true,
+						"restitution":0,
+						"friction":0.5,
+						"rollingFriction":0,
+						"linearDamping":0,
+						"angularDamping":0.05,
+						"overrideGravity":false,
+						"gravity":[
+							0,
+							0,
+							0
+						],
+						"shapes":[
+							{
+								"type":"BoxColliderShape",
+								"center":[
+									0,
+									0,
+									0
+								],
+								"size":[
+									1,
+									1,
+									1
+								]
+							}
+						],
+						"isTrigger":true,
+						"linearFactor":[
+							1,
+							1,
+							1
+						],
+						"angularFactor":[
+							1,
+							1,
+							1
+						]
+					}
+				],
 				"child":[]
 			},
 			{
@@ -467,14 +510,14 @@
 									{
 										"type":"BoxColliderShape",
 										"center":[
-											-0.006581068,
-											-5.394221,
+											-0.2175768,
+											-5.22844,
 											-1.228423
 										],
 										"size":[
-											9.3,
-											16.85,
-											3.755288
+											7.923678,
+											16.51844,
+											3.755289
 										]
 									}
 								],
@@ -707,17 +750,8 @@
 								"rollingFriction":0,
 								"shapes":[
 									{
-										"type":"BoxColliderShape",
-										"center":[
-											-0.0954864,
-											-2.782496,
-											0.9982511
-										],
-										"size":[
-											2.724371,
-											3.94603,
-											2.003498
-										]
+										"type":"MeshColliderShape",
+										"mesh":"Assets/zhanguan-wenziqiang.lm"
 									}
 								],
 								"isTrigger":false

@@ -313,16 +313,21 @@ var laya = (function () {
         onUpdate() {
             var elapsedTime = Laya.timer.delta;
             if (JoyStick.angle != -1) {
+                ConstEvent.isTrigger = false;
                 var speedX = Math.sin(JoyStick.radians);
                 var speedZ = Math.cos(JoyStick.radians);
-                this.moveForward(this.moveSpeed * elapsedTime * .001 * speedZ);
-                this.moveRight(this.moveSpeed * elapsedTime * .001 * speedX);
-                ConstEvent.cameraRotate = new Laya.Vector3(0, 0, 0);
+                if (!ConstEvent.isTrigger) {
+                    this.moveForward(this.moveSpeed * elapsedTime * .001 * speedZ);
+                    this.moveRight(this.moveSpeed * elapsedTime * .001 * speedX);
+                }
+                if (ConstEvent.isTrigger) {
+                    console.log(ConstEvent.isTrigger);
+                }
                 var rayOrigin = new Laya.Vector3(0, 0, 0);
                 Laya.Vector3.add(this.camera.transform.position, new Laya.Vector3(speedX, 0, speedZ), rayOrigin);
                 this.ray.origin = rayOrigin;
-                this.camera.parent.scene.physicsSimulation.rayCast(this.ray, this.outHitInfo, 5);
-                if (this.outHitInfo.succeeded) {
+                this.camera.parent.scene.physicsSimulation.rayCast(this.ray, this.outHitInfo);
+                if (!this.outHitInfo.succeeded) {
                     speedX = speedZ = 0;
                     ConstEvent.cameraTranslate = new Laya.Vector3(speedX, 0, speedZ);
                 }
@@ -355,10 +360,11 @@ var laya = (function () {
                 this.lastMouseY = Laya.stage.mouseY;
             }
             else {
-                Laya.KeyBoardManager.hasKeyDown(87) && this.moveForward(-0.001 * elapsedTime);
-                Laya.KeyBoardManager.hasKeyDown(83) && this.moveForward(0.001 * elapsedTime);
-                Laya.KeyBoardManager.hasKeyDown(65) && this.moveRight(-0.001 * elapsedTime);
-                Laya.KeyBoardManager.hasKeyDown(68) && this.moveRight(0.001 * elapsedTime);
+                ConstEvent.isTrigger = false;
+                Laya.KeyBoardManager.hasKeyDown(87) && !ConstEvent.isTrigger && this.moveForward(-0.001 * elapsedTime);
+                Laya.KeyBoardManager.hasKeyDown(83) && !ConstEvent.isTrigger && this.moveForward(0.001 * elapsedTime);
+                Laya.KeyBoardManager.hasKeyDown(65) && !ConstEvent.isTrigger && this.moveRight(-0.001 * elapsedTime);
+                Laya.KeyBoardManager.hasKeyDown(68) && !ConstEvent.isTrigger && this.moveRight(0.001 * elapsedTime);
                 ConstEvent.cameraTranslate = new Laya.Vector3(0, 0, 0);
                 ConstEvent.cameraRotate = new Laya.Vector3(0, 0, 0);
             }
@@ -381,10 +387,12 @@ var laya = (function () {
         }
         moveForward(distance) {
             this._tempVector3.x = 0;
+            this._tempVector3.y = 0;
             this._tempVector3.z = distance;
             this.camera.transform.translate(this._tempVector3);
         }
         moveRight(distance) {
+            this._tempVector3.y = 0;
             this._tempVector3.z = 0;
             this._tempVector3.x = distance;
             this.camera.transform.translate(this._tempVector3);
@@ -432,6 +440,33 @@ var laya = (function () {
                 this._dir.z *= -1,
                     Laya.Quaternion.rotationLookAt(this._dir, this._rotateUpDir, this.lookAtRotation);
                 this.monkey.transform.rotation = this.lookAtRotation;
+            }
+        }
+    }
+
+    class triggerScript extends Laya.Script3D {
+        constructor() {
+            super();
+            this.currentName = '';
+            console.log('triggerScript');
+        }
+        onTriggerEnter(e) {
+            console.log('enter:' + e.owner.name);
+            if (e.owner.name == 'dianshi' || e.owner.name == 'dianshiqiang' || e.owner.name == 'wenziqiang') {
+                ConstEvent.isTrigger = true;
+                console.log(ConstEvent.isTrigger);
+            }
+            else {
+                ConstEvent.isTrigger = false;
+            }
+        }
+        onTriggerExit(e) {
+            console.log('exit:' + e.owner.name);
+            if (e.owner.name == 'dianshi' || e.owner.name == 'dianshiqiang' || e.owner.name == 'wenziqiang') {
+                ConstEvent.isTrigger = false;
+            }
+            else {
+                ConstEvent.isTrigger = true;
             }
         }
     }
@@ -488,7 +523,7 @@ var laya = (function () {
                 "res/threeDimen/skinModel/LayaMonkey/Assets/LayaMonkey/Materials/T_Diffuse.lmat",
                 "res/threeDimen/skyBox/skyBox2/SkyBox2.lmat",
                 "res/atlas/kefu2d.png",
-                "res/atlas/play.jpg"
+                "res/atlas/play.png"
             ];
             Laya.loader.create(resource, Laya.Handler.create(this, this.on3DComplete));
         }
@@ -499,16 +534,28 @@ var laya = (function () {
             this.camera = this.scene.getChildByName("Main Camera");
             this.camera.enableHDR = false;
             this.camera.addComponent(CameraControlScript);
+            this.camera.addComponent(triggerScript);
             this.scene.addChild(this.camera);
+            this.scene.physicsSimulation.continuousCollisionDetection = true;
             var cub1 = this.scene.getChildByName('zhanguan');
             var cub2 = cub1.getChildByName('dimianl');
-            var cub3 = cub1.getChildByName('dianshi');
+            var cub3 = cub1.getChildByName('dianshiqiang');
+            var cub4 = cub1.getChildByName('qiang');
+            var cub5 = cub1.getChildByName('qiangbianshang');
+            var cub6 = cub1.getChildByName('wenziqiang');
             var cubeCollider2 = cub2.getComponent(Laya.PhysicsCollider);
             var cubeCollider3 = cub3.getComponent(Laya.PhysicsCollider);
-            cubeCollider2.friction = 2;
-            cubeCollider2.restitution = 0.3;
+            var cubeCollider4 = cub4.getComponent(Laya.PhysicsCollider);
+            var cubeCollider5 = cub5.getComponent(Laya.PhysicsCollider);
+            var cubeCollider6 = cub6.getComponent(Laya.PhysicsCollider);
             cubeCollider3.friction = 2;
             cubeCollider3.restitution = 0.3;
+            cubeCollider4.friction = 2;
+            cubeCollider4.restitution = 0.3;
+            cubeCollider5.friction = 2;
+            cubeCollider5.restitution = 0.3;
+            cubeCollider6.friction = 2;
+            cubeCollider6.restitution = 0.3;
             ConstEvent.video = new Video();
             Main.rocker = new JoyStick(Laya.stage);
             Laya.stage.addChild(Main.rocker);
@@ -524,6 +571,21 @@ var laya = (function () {
             kefu.transform.translate(new Laya.Vector3(-1, 1, 2.3));
             kefu.meshRenderer.material = kefuMat;
             kefu.addComponent(kefuCharacterControl).init(this.camera, false);
+            var anniuMat = new Laya.UnlitMaterial();
+            anniuMat.albedoTexture = Laya.Loader.getRes("res/atlas/play.png");
+            anniuMat.albedoIntensity = 1;
+            anniuMat.alphaTest = true;
+            anniuMat.alphaTestValue = 0.6;
+            anniuMat.renderQueue = Laya.Material.RENDERQUEUE_ALPHATEST;
+            var anniu = this.scene.addChild(new Laya.MeshSprite3D(Laya.PrimitiveMesh.createQuad(0.6, 0.6)));
+            anniu.transform.translate(new Laya.Vector3(0.1, 1.8, -2.8));
+            anniu.meshRenderer.material = anniuMat;
+            var planeStaticCollider = anniu.addComponent(Laya.PhysicsCollider);
+            var planeShape = new Laya.BoxColliderShape(10, 0, 10);
+            planeStaticCollider.colliderShape = planeShape;
+            planeStaticCollider.friction = 2;
+            planeStaticCollider.restitution = 0.3;
+            anniu.addComponent(kefuCharacterControl).init(this.camera, false);
             this.addMouseEvent();
             Laya.timer.frameLoop(100, this, this.onFrameLoop);
         }

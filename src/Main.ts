@@ -5,6 +5,7 @@ import CameraControlScript from './CameraControlScript';
 import constValue from './ConstEvent';
 import kefuCharacterControl from './kefuCharacterControl';
 import Video from './script/VideoUI';
+import triggerScript from "./triggerScript";
 
 export default class Main {
 	/*3D摄像机*/
@@ -90,7 +91,7 @@ export default class Main {
 			"res/threeDimen/skinModel/LayaMonkey/Assets/LayaMonkey/Materials/T_Diffuse.lmat",
 			"res/threeDimen/skyBox/skyBox2/SkyBox2.lmat",
 			"res/atlas/kefu2d.png",
-			"res/atlas/play.jpg"
+			"res/atlas/play.png"
 		];
 		Laya.loader.create(resource, Laya.Handler.create(this, this.on3DComplete));	
 	}
@@ -121,8 +122,22 @@ export default class Main {
 
 		//给摄像机添加控制脚本
 		this.camera.addComponent(CameraControlScript);
+
+		// this.camera.addComponent(Laya.CharacterController);
+		//创建刚体碰撞器
+		// let camera = this.camera.addComponent(Laya.Rigidbody3D) as Laya.Rigidbody3D;
+		// debugger
+		// //开启运动类型刚体
+		// camera.isKinematic = true;
+		// camera.isTrigger = true;
+		this.camera.addComponent(triggerScript)
+
 		//加载摄像机到场景
 		this.scene.addChild(this.camera);
+
+		this.scene.physicsSimulation.continuousCollisionDetection = true; 
+
+		
 
 		// //创建方向光
 		// var light = this.scene.addChild(new Laya.DirectionLight()) as Laya.DirectionLight;
@@ -138,29 +153,64 @@ export default class Main {
 
 		// var cube = this.scene.getChildAt(0) as Laya.Sprite3D;
 
-		var cub1 = this.scene.getChildByName('zhanguan');
+		var cub1 = this.scene.getChildByName('zhanguan');	
 		var cub2 = cub1.getChildByName('dimianl');
-		var cub3 = cub1.getChildByName('dianshi');
+		var cub3 = cub1.getChildByName('dianshiqiang');
+		var cub4 = cub1.getChildByName('qiang');
+		var cub5 = cub1.getChildByName('qiangbianshang');
+		var cub6 = cub1.getChildByName('wenziqiang');
+
+		// debugger
+		// cub3.addComponent(triggerScript)
+		// cub4.addComponent(triggerScript)
+		// cub5.addComponent(triggerScript)
 
 		// //设置碰撞
     // //获取物理碰撞器
     // var cubeCollider:Laya.PhysicsCollider = cub1.getComponent(Laya.PhysicsCollider);
 		var cubeCollider2:Laya.PhysicsCollider = cub2.getComponent(Laya.PhysicsCollider);
 		var cubeCollider3:Laya.PhysicsCollider = cub3.getComponent(Laya.PhysicsCollider);
+		var cubeCollider4:Laya.PhysicsCollider = cub4.getComponent(Laya.PhysicsCollider);
+		var cubeCollider5:Laya.PhysicsCollider = cub5.getComponent(Laya.PhysicsCollider);
+		var cubeCollider6:Laya.PhysicsCollider = cub6.getComponent(Laya.PhysicsCollider);
+		
 
 		// //物理碰撞体设置摩擦力
 		// cubeCollider.friction = 2;
 		// //物理碰撞体设置弹力
 		// cubeCollider.restitution = 0.3;
 
-		//物理碰撞体设置摩擦力
-		cubeCollider2.friction = 2;
-		//物理碰撞体设置弹力
-		cubeCollider2.restitution = 0.3;
-		//物理碰撞体设置摩擦力
+		// //物理碰撞体设置摩擦力
+		// cubeCollider2.friction = 2;
+		// //物理碰撞体设置弹力
+		// cubeCollider2.restitution = 0.3;
+		// //标记为触发器,取消物理反馈
+		// cubeCollider2.isTrigger = true;
+		// //物理碰撞体设置摩擦力
 		cubeCollider3.friction = 2;
 		//物理碰撞体设置弹力
 		cubeCollider3.restitution = 0.3;
+		// //标记为触发器,取消物理反馈
+		// cubeCollider3.isTrigger = true;
+		// //物理碰撞体设置摩擦力
+		cubeCollider4.friction = 2;
+		//物理碰撞体设置弹力
+		cubeCollider4.restitution = 0.3;
+		// //标记为触发器,取消物理反馈
+		// cubeCollider4.isTrigger = true;
+		// //物理碰撞体设置摩擦力
+		cubeCollider5.friction = 2;
+		//物理碰撞体设置弹力
+		cubeCollider5.restitution = 0.3;
+		// //标记为触发器,取消物理反馈
+		// cubeCollider5.isTrigger = true;
+		
+		//物理碰撞体设置摩擦力
+		cubeCollider6.friction = 2;
+		//物理碰撞体设置弹力
+		cubeCollider6.restitution = 0.3;
+		// //标记为触发器,取消物理反馈
+		// cubeCollider6.isTrigger = true;
 
 		constValue.video = new Video()
 
@@ -206,30 +256,31 @@ export default class Main {
 		// rect.size(200, 200);
 		// Laya.stage.addChild(rect);
 
-		// //添加视频播放按钮
-		// var anniuMat = new Laya.UnlitMaterial();
-		// anniuMat.albedoTexture = Laya.Loader.getRes("res/atlas/play.jpg");
-		// anniuMat.albedoIntensity = 1;
-		// //设置背景透明
-		// anniuMat.alphaTest = true;
-		// anniuMat.alphaTestValue = 0.6;
-		// anniuMat.renderQueue = Laya.Material.RENDERQUEUE_ALPHATEST
-		// var anniu = this.scene.addChild(new Laya.MeshSprite3D(Laya.PrimitiveMesh.createQuad(0.6, 0.6))) as Laya.MeshSprite3D;//0.8 * (kefuMat.albedoTexture.width / kefuMat.albedoTexture.height)
-		// anniu.transform.translate(new Laya.Vector3(0.1, 1.8, -2.8));
-		// anniu.meshRenderer.material = anniuMat;
+		//添加视频播放按钮
+		var anniuMat = new Laya.UnlitMaterial();
+		anniuMat.albedoTexture = Laya.Loader.getRes("res/atlas/play.png");
+		anniuMat.albedoIntensity = 1;
+		//设置背景透明
+		anniuMat.alphaTest = true;
+		anniuMat.alphaTestValue = 0.6;
+		anniuMat.renderQueue = Laya.Material.RENDERQUEUE_ALPHATEST
+		var anniu = this.scene.addChild(new Laya.MeshSprite3D(Laya.PrimitiveMesh.createQuad(0.6, 0.6))) as Laya.MeshSprite3D;//0.8 * (kefuMat.albedoTexture.width / kefuMat.albedoTexture.height)
+		anniu.transform.translate(new Laya.Vector3(0.1, 1.8, -2.8));
+		anniu.meshRenderer.material = anniuMat;
 
-		// //平面添加物理碰撞体组件
-		// var planeStaticCollider:Laya.PhysicsCollider = anniu.addComponent(Laya.PhysicsCollider);
-		// //创建盒子形状碰撞器
-		// var planeShape:Laya.BoxColliderShape = new Laya.BoxColliderShape(10, 0, 10);
-		// //物理碰撞体设置形状
-		// planeStaticCollider.colliderShape = planeShape;
-		// //物理碰撞体设置摩擦力
-		// planeStaticCollider.friction = 2;
-		// //物理碰撞体设置弹力
-		// planeStaticCollider.restitution = 0.3;
+		//平面添加物理碰撞体组件
+		var planeStaticCollider:Laya.PhysicsCollider = anniu.addComponent(Laya.PhysicsCollider);
+		//创建盒子形状碰撞器
+		var planeShape:Laya.BoxColliderShape = new Laya.BoxColliderShape(10, 0, 10);
+		//物理碰撞体设置形状
+		planeStaticCollider.colliderShape = planeShape;
+		//物理碰撞体设置摩擦力
+		planeStaticCollider.friction = 2;
+		//物理碰撞体设置弹力
+		planeStaticCollider.restitution = 0.3;
 
-		// console.log(anniu)
+		//添加朝向摄像机脚本
+		anniu.addComponent(kefuCharacterControl).init(this.camera,false)
 
 		// //创建一个精灵
 		// this.sprite3D = new Laya.Sprite3D();

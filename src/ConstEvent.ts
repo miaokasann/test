@@ -13,6 +13,8 @@ export default class ConstEvent{
 	/*摄像机移动向量*/
 	public static cameraRotate:Laya.Vector3;
 
+    public static isTrigger:boolean;
+
     public static scene:Laya.Scene;
 
     public static video:any;

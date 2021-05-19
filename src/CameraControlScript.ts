@@ -71,13 +71,19 @@ export default class CameraControlScript extends Laya.Script3D {
     public onUpdate():void {
         var elapsedTime = Laya.timer.delta;
         if(JoyStick.angle != -1){
+            constValue.isTrigger = false
             //通过弧度和速度计算角色在x，z轴上移动的量
             var speedX:number = Math.sin(JoyStick.radians);
             var speedZ:number = Math.cos(JoyStick.radians);
-            this.moveForward(this.moveSpeed * elapsedTime * .001 * speedZ);
-            this.moveRight(this.moveSpeed * elapsedTime * .001 * speedX);
+            if(!constValue.isTrigger) {
+                this.moveForward(this.moveSpeed * elapsedTime * .001 * speedZ);
+                this.moveRight(this.moveSpeed * elapsedTime * .001 * speedX);
+            }
+            if(constValue.isTrigger) {
+                console.log(constValue.isTrigger)
+            }
             // constValue.cameraTranslate = new Laya.Vector3(direction*this.moveSpeed*speedX,0,direction*this.moveSpeed*speedZ);
-            constValue.cameraRotate = new Laya.Vector3(0,0,0);
+            // constValue.cameraRotate = new Laya.Vector3(0,0,0);
 
             //射线原点
             var rayOrigin:Laya.Vector3 = new Laya.Vector3(0,0,0);
@@ -86,9 +92,9 @@ export default class CameraControlScript extends Laya.Script3D {
             //射线原点位置更新
             this.ray.origin = rayOrigin;
             //物理射线与碰撞器相交检测
-            this.camera.parent.scene.physicsSimulation.rayCast(this.ray,this.outHitInfo,5);
+            this.camera.parent.scene.physicsSimulation.rayCast(this.ray,this.outHitInfo);
             //如果未有碰撞则返回
-            if(this.outHitInfo.succeeded) {
+            if(!this.outHitInfo.succeeded) {
                 speedX = speedZ = 0;
                 constValue.cameraTranslate = new Laya.Vector3(speedX,0,speedZ);
             }
@@ -143,10 +149,11 @@ export default class CameraControlScript extends Laya.Script3D {
         //     constValue.cameraTranslate = new Laya.Vector3(0,0,0);
         // } 
         else {
-            Laya.KeyBoardManager.hasKeyDown(87) && this.moveForward(-0.001 * elapsedTime);//W
-			Laya.KeyBoardManager.hasKeyDown(83) && this.moveForward(0.001 * elapsedTime);//S
-			Laya.KeyBoardManager.hasKeyDown(65) && this.moveRight(-0.001 * elapsedTime);//A
-			Laya.KeyBoardManager.hasKeyDown(68) && this.moveRight(0.001 * elapsedTime);//D
+            constValue.isTrigger = false
+            Laya.KeyBoardManager.hasKeyDown(87) && !constValue.isTrigger && this.moveForward(-0.001 * elapsedTime);//W
+			Laya.KeyBoardManager.hasKeyDown(83) && !constValue.isTrigger && this.moveForward(0.001 * elapsedTime);//S
+			Laya.KeyBoardManager.hasKeyDown(65) && !constValue.isTrigger && this.moveRight(-0.001 * elapsedTime);//A
+			Laya.KeyBoardManager.hasKeyDown(68) && !constValue.isTrigger && this.moveRight(0.001 * elapsedTime);//D
             constValue.cameraTranslate = new Laya.Vector3(0,0,0);
             constValue.cameraRotate = new Laya.Vector3(0,0,0);
         }
@@ -181,7 +188,7 @@ export default class CameraControlScript extends Laya.Script3D {
      */
     public moveForward(distance):void {
         this._tempVector3.x = 0;
-        // this._tempVector3.y = 0;
+        this._tempVector3.y = 0;
         this._tempVector3.z = distance;
         this.camera.transform.translate(this._tempVector3);
     }
@@ -189,7 +196,7 @@ export default class CameraControlScript extends Laya.Script3D {
      * 向右移动。
      */
     public moveRight(distance):void {
-        // this._tempVector3.y = 0;
+        this._tempVector3.y = 0;
         this._tempVector3.z = 0;
         this._tempVector3.x = distance;
         this.camera.transform.translate(this._tempVector3);
