@@ -71,7 +71,7 @@ export default class CameraControlScript extends Laya.Script3D {
     public onUpdate():void {
         var elapsedTime = Laya.timer.delta;
         if(JoyStick.angle != -1){
-            constValue.isTrigger = false
+            console.log(constValue.isTrigger)
             //通过弧度和速度计算角色在x，z轴上移动的量
             var speedX:number = Math.sin(JoyStick.radians);
             var speedZ:number = Math.cos(JoyStick.radians);
@@ -149,7 +149,6 @@ export default class CameraControlScript extends Laya.Script3D {
         //     constValue.cameraTranslate = new Laya.Vector3(0,0,0);
         // } 
         else {
-            constValue.isTrigger = false
             Laya.KeyBoardManager.hasKeyDown(87) && !constValue.isTrigger && this.moveForward(-0.001 * elapsedTime);//W
 			Laya.KeyBoardManager.hasKeyDown(83) && !constValue.isTrigger && this.moveForward(0.001 * elapsedTime);//S
 			Laya.KeyBoardManager.hasKeyDown(65) && !constValue.isTrigger && this.moveRight(-0.001 * elapsedTime);//A

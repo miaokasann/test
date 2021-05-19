@@ -313,7 +313,7 @@ var laya = (function () {
         onUpdate() {
             var elapsedTime = Laya.timer.delta;
             if (JoyStick.angle != -1) {
-                ConstEvent.isTrigger = false;
+                console.log(ConstEvent.isTrigger);
                 var speedX = Math.sin(JoyStick.radians);
                 var speedZ = Math.cos(JoyStick.radians);
                 if (!ConstEvent.isTrigger) {
@@ -360,7 +360,6 @@ var laya = (function () {
                 this.lastMouseY = Laya.stage.mouseY;
             }
             else {
-                ConstEvent.isTrigger = false;
                 Laya.KeyBoardManager.hasKeyDown(87) && !ConstEvent.isTrigger && this.moveForward(-0.001 * elapsedTime);
                 Laya.KeyBoardManager.hasKeyDown(83) && !ConstEvent.isTrigger && this.moveForward(0.001 * elapsedTime);
                 Laya.KeyBoardManager.hasKeyDown(65) && !ConstEvent.isTrigger && this.moveRight(-0.001 * elapsedTime);
