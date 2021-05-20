@@ -19,7 +19,8 @@ export default class triggerScript extends Laya.Script3D {
         console.log('enter:' + e.owner.name)
         if(e.owner.name == 'dianshi' || e.owner.name == 'dianshiqiang' || e.owner.name == 'wenziqiang') {
             constValue.isTrigger = true;
-            console.log(constValue.isTrigger)
+        } else if (e.owner.name == 'qiang' || e.owner.name == 'qiangbianshang') {
+            constValue.isTrigger = false;
         } else {
             constValue.isTrigger = false;
         }
@@ -36,8 +37,10 @@ export default class triggerScript extends Laya.Script3D {
         console.log('exit:' + e.owner.name)
         if(e.owner.name == 'dianshi' || e.owner.name == 'dianshiqiang' || e.owner.name == 'wenziqiang') {
             constValue.isTrigger = false;
-        } else {
+        } else if (e.owner.name == 'qiang' || e.owner.name == 'qiangbianshang') {
             constValue.isTrigger = true;
+        } else {
+            constValue.isTrigger = false;
         }
         // 1 == Y.instance.loadType && this.currentName == e.owner.name && (Y.instance.isInCompanyEx = !1,
         // p.event("SetCompanyDaoHangDownList", !1),

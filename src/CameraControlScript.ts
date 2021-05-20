@@ -71,17 +71,23 @@ export default class CameraControlScript extends Laya.Script3D {
     public onUpdate():void {
         var elapsedTime = Laya.timer.delta;
         if(JoyStick.angle != -1){
-            console.log(constValue.isTrigger)
             //通过弧度和速度计算角色在x，z轴上移动的量
             var speedX:number = Math.sin(JoyStick.radians);
             var speedZ:number = Math.cos(JoyStick.radians);
-            if(!constValue.isTrigger) {
-                this.moveForward(this.moveSpeed * elapsedTime * .001 * speedZ);
-                this.moveRight(this.moveSpeed * elapsedTime * .001 * speedX);
-            }
+            this.moveForward(this.moveSpeed * elapsedTime * .001 * speedZ);
+            this.moveRight(this.moveSpeed * elapsedTime * .001 * speedX);
+            var lastX = speedX - 10;
+            var lastZ = speedZ - 10;
+            var xV = speedX > 0 ? 1 : -1
+            var zV = speedZ > 0 ? 1 : -1
+           
+
             if(constValue.isTrigger) {
                 console.log(constValue.isTrigger)
+                this.moveForward(this.moveSpeed * elapsedTime * .001 * lastZ * zV);
+                this.moveRight(this.moveSpeed * elapsedTime * .001 * lastX * xV);
             }
+            
             // constValue.cameraTranslate = new Laya.Vector3(direction*this.moveSpeed*speedX,0,direction*this.moveSpeed*speedZ);
             // constValue.cameraRotate = new Laya.Vector3(0,0,0);
 
@@ -149,10 +155,30 @@ export default class CameraControlScript extends Laya.Script3D {
         //     constValue.cameraTranslate = new Laya.Vector3(0,0,0);
         // } 
         else {
-            Laya.KeyBoardManager.hasKeyDown(87) && !constValue.isTrigger && this.moveForward(-0.001 * elapsedTime);//W
-			Laya.KeyBoardManager.hasKeyDown(83) && !constValue.isTrigger && this.moveForward(0.001 * elapsedTime);//S
-			Laya.KeyBoardManager.hasKeyDown(65) && !constValue.isTrigger && this.moveRight(-0.001 * elapsedTime);//A
-			Laya.KeyBoardManager.hasKeyDown(68) && !constValue.isTrigger && this.moveRight(0.001 * elapsedTime);//D
+            if (Laya.KeyBoardManager.hasKeyDown(87)) {
+                if(constValue.isTrigger) {
+                    this.moveForward(0.001 * elapsedTime + 1);
+                }
+                this.moveForward(-0.001 * elapsedTime);//W
+            }
+            if(Laya.KeyBoardManager.hasKeyDown(83)) {
+                if(constValue.isTrigger) {
+                    this.moveForward(-0.001 * elapsedTime - 1);
+                }
+                this.moveForward(0.001 * elapsedTime);//S
+            }
+			if(Laya.KeyBoardManager.hasKeyDown(65)) {
+                if(constValue.isTrigger) {
+                    this.moveRight(0.001 * elapsedTime + 1);
+                }
+                this.moveRight(-0.001 * elapsedTime);//A
+            }
+            if(Laya.KeyBoardManager.hasKeyDown(68)) {
+                if(constValue.isTrigger) {
+                    this.moveRight(-0.001 * elapsedTime - 1);
+                }
+                this.moveRight(0.001 * elapsedTime);//D
+            }
             constValue.cameraTranslate = new Laya.Vector3(0,0,0);
             constValue.cameraRotate = new Laya.Vector3(0,0,0);
         }

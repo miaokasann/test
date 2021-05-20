@@ -271,7 +271,7 @@ export default class Main {
 		//平面添加物理碰撞体组件
 		var planeStaticCollider:Laya.PhysicsCollider = anniu.addComponent(Laya.PhysicsCollider);
 		//创建盒子形状碰撞器
-		var planeShape:Laya.BoxColliderShape = new Laya.BoxColliderShape(10, 0, 10);
+		var planeShape:Laya.BoxColliderShape = new Laya.BoxColliderShape(1, 0, 1);
 		//物理碰撞体设置形状
 		planeStaticCollider.colliderShape = planeShape;
 		//物理碰撞体设置摩擦力
