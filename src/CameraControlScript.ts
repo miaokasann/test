@@ -50,14 +50,6 @@ export default class CameraControlScript extends Laya.Script3D {
 
     public video:Video;
 
-
-
-
-
-    public touchId:number;
-    public touchUIPos:Laya.Vector2 = new Laya.Vector2();
-    public rotateSpeed:number = 3;
-
     /*摇杆控制器*/
     constructor() { 
         super(); 
@@ -65,22 +57,6 @@ export default class CameraControlScript extends Laya.Script3D {
         this.outHitInfo = new Laya.HitResult();
         //射线初始化（必须初始化）
 		this._ray = new Laya.Ray(new Laya.Vector3(0, 0, 0), new Laya.Vector3(0, 0, 0));
-    }
-    public init() {
-        this.registorListenner()
-    }
-
-    registorListenner() {
-        Laya.stage.on(Laya.Event.MOUSE_DOWN, this, this.onTouchStart),
-        Laya.stage.on(Laya.Event.MOUSE_MOVE, this, this.onTouchMove),
-        Laya.stage.on(Laya.Event.MOUSE_UP, this, this.onTouchEnd),
-        Laya.stage.on(Laya.Event.MOUSE_OUT, this, this.onTouchEnd)
-    }
-    clearListenner() {
-        Laya.stage.off(Laya.Event.MOUSE_DOWN, this, this.onTouchStart),
-        Laya.stage.off(Laya.Event.MOUSE_MOVE, this, this.onTouchMove),
-        Laya.stage.off(Laya.Event.MOUSE_UP, this, this.onTouchEnd),
-        Laya.stage.off(Laya.Event.MOUSE_OUT, this, this.onTouchEnd)
     }
 
     public onAwake():void{
@@ -117,34 +93,34 @@ export default class CameraControlScript extends Laya.Script3D {
             }
             this.moveForward(this.moveSpeed * elapsedTime * .001 * speedZ);
             this.moveRight(this.moveSpeed * elapsedTime * .001 * speedX);
+
+            //为了碰撞时使用，当撞上墙的时候倒退10
             var lastX = speedX - 10;
             var lastZ = speedZ - 10;
+            //获取方向
             var xV = speedX > 0 ? 1 : -1
             var zV = speedZ > 0 ? 1 : -1
            
-
+            //撞墙的时候
             if(constValue.isTrigger) {
-                console.log(constValue.isTrigger)
+                console.log('是否碰撞', constValue.isTrigger)
                 this.moveForward(this.moveSpeed * elapsedTime * .001 * lastZ * zV);
                 this.moveRight(this.moveSpeed * elapsedTime * .001 * lastX * xV);
             }
             
-            // constValue.cameraTranslate = new Laya.Vector3(direction*this.moveSpeed*speedX,0,direction*this.moveSpeed*speedZ);
-            // constValue.cameraRotate = new Laya.Vector3(0,0,0);
-
-            //射线原点
-            var rayOrigin:Laya.Vector3 = new Laya.Vector3(0,0,0);
-            //根据角色位置计算射线原点
-            Laya.Vector3.add(this.camera.transform.position,new Laya.Vector3(speedX,0,speedZ),rayOrigin);
-            //射线原点位置更新
-            this.ray.origin = rayOrigin;
-            //物理射线与碰撞器相交检测
-            this.camera.parent.scene.physicsSimulation.rayCast(this.ray,this.outHitInfo);
-            //如果未有碰撞则返回
-            if(!this.outHitInfo.succeeded) {
-                speedX = speedZ = 0;
-                constValue.cameraTranslate = new Laya.Vector3(speedX,0,speedZ);
-            }
+            // //射线原点
+            // var rayOrigin:Laya.Vector3 = new Laya.Vector3(0,0,0);
+            // //根据角色位置计算射线原点
+            // Laya.Vector3.add(this.camera.transform.position,new Laya.Vector3(speedX,0,speedZ),rayOrigin);
+            // //射线原点位置更新
+            // this.ray.origin = rayOrigin;
+            // //物理射线与碰撞器相交检测
+            // this.camera.parent.scene.physicsSimulation.rayCast(this.ray,this.outHitInfo);
+            // //如果未有碰撞则返回
+            // if(!this.outHitInfo.succeeded) {
+            //     speedX = speedZ = 0;
+            //     constValue.cameraTranslate = new Laya.Vector3(speedX,0,speedZ);
+            // }
         } else if (!isNaN(this.lastMouseX) && !isNaN(this.lastMouseY) && this.isMouseDown && !JoyStick._isTouchMove && !constValue.isClickVideoBtn) {
             //鼠标点击 摇杆以外区域
             this.posX = this.point.x = Laya.MouseManager.instance.mouseX;
@@ -173,13 +149,7 @@ export default class CameraControlScript extends Laya.Script3D {
             //         constValue.cameraTranslate = new Laya.Vector3(0,0,0);
             //     }
             // }
-            // if (this.outs.succeeded && this.outs.collider.owner.name == "dianshi") {
-            //   debugger
-            // }
-            // this.clickMovePassedTime += elapsedTime * 0.001
-            // var distance = Laya.Vector3.distance(this.outs.point, this.camera.transform.position)
-            // this.clickMoveTimer = distance / this.moveSpeed
-            // if(this.clickMovePassedTime >= this.clickMoveTimer)
+
             var offsetX = Laya.stage.mouseX - this.lastMouseX;
 			var offsetY = Laya.stage.mouseY - this.lastMouseY;
 				
@@ -191,10 +161,10 @@ export default class CameraControlScript extends Laya.Script3D {
             this.lastMouseX = Laya.stage.mouseX;
             this.lastMouseY = Laya.stage.mouseY;
         } 
-        else if(constValue.isTurning) {
-            constValue.cameraRotate = new Laya.Vector3(0,.001 * elapsedTime * constValue.turnSpeed,0);
-            constValue.cameraTranslate = new Laya.Vector3(0,0,0);
-        } 
+        // else if(constValue.isTurning) {
+        //     constValue.cameraRotate = new Laya.Vector3(0,.001 * elapsedTime * constValue.turnSpeed,0);
+        //     constValue.cameraTranslate = new Laya.Vector3(0,0,0);
+        // } 
         else {
             if (Laya.KeyBoardManager.hasKeyDown(87)) {
                 if(constValue.isTrigger) {
@@ -231,34 +201,7 @@ export default class CameraControlScript extends Laya.Script3D {
         this.camera.transform.getForward(this._dirForward);
         return this._dirForward
     }
-    public onTouchStart(e) {
-        console.log(e)
-        // 3 == Y.instance.gameState && -1 == this.touchId && (this._hasMoveCamera = !1,
-        // this.clickMoving = !1,
-        // Y.instance.ShowClickTips(!1, this.clickMovePos),
-        this.touchId = e.touchId
-        this.touchUIPos = new Laya.Vector2(e.stageX,e.stageY)
-    }
-    public onTouchMove(e) {
-        if (this.touchUIPos && this.touchId == e.touchId && (Math.abs(e.stageX - this.touchUIPos.x) > 5 || Math.abs(e.stageY - this.touchUIPos.y) > 5)) {
-            // this._hasMoveCamera = !0;
-            let t = Laya.timer.delta / 1e3 * this.rotateSpeed;
-            this.camera.transform.rotate(new Laya.Vector3(0,(e.stageX - this.touchUIPos.x) * t), !0, !1);
-            let i = (e.stageY - this.touchUIPos.y) * t;
-            this.camera.transform.localRotationEulerX = this.Clamp(this.camera.transform.localRotationEulerX + i, -30, 30),
-            this.touchUIPos.x = e.stageX,
-            this.touchUIPos.y = e.stageY
-        }
-    }
-    public onTouchEnd(e) {
-        this.touchUIPos = null
-        // this.touchId = -1,
-        // this._hasMoveCamera || this.onMyMouseClick(null),
-        // this._hasMoveCamera = !1)
-    }
-    public Clamp(e, t, i) {
-        return e < t ? t : e > i ? i : e
-    }
+    
     public mouseDown(e):void {
         //获得鼠标的旋转值
         this.camera.transform.localRotation.getYawPitchRoll(this.yawPitchRoll);

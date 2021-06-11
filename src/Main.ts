@@ -30,8 +30,6 @@ export default class Main {
 	// public outs:Laya.HitResult = new Laya.HitResult();
 	public _tempVector3:Laya.Vector3 = new Laya.Vector3()
 
-	private sprite3D:Laya.Sprite3D;
-
 	constructor() {
 		
 		//使用视网膜画布模式，在init之前使用
@@ -39,11 +37,9 @@ export default class Main {
 		Config.isAntialias = true;
 		Config.isAlpha = true;
 
-		let config3d = new Config3D()
-		config3d.lightClusterCount = new Laya.Vector3(100, 100, 100)
-		console.log(config3d)
-		// console.dir(Config)
-		// console.dir(Config3D)
+		// let config3d = new Config3D()
+		// config3d.lightClusterCount = new Laya.Vector3(100, 100, 100)
+
 		//根据IDE设置初始化引擎		
 		if (window["Laya3D"]) Laya3D.init(GameConfig.width, GameConfig.height);
 		else Laya.init(GameConfig.width, GameConfig.height);
@@ -105,20 +101,10 @@ export default class Main {
 	private on3DComplete():void{
 		//加载完成获取到了Scene3d，把他放到舞台上
 		this.scene = Laya.stage.addChild(Laya.Loader.getRes("res/LayaScene_changjing/Conventional/changjing.ls")) as Laya.Scene3D;
-		console.log(this.scene)
+
 		//设置场景环境光
 		// this.scene.ambientColor = new Laya.Vector3(100, 0, 0);
 
-
-		//方向光
-		// var directionLight:Laya.DirectionLight = this.scene.addChild(new Laya.DirectionLight()) as Laya.DirectionLight;
-		// directionLight.color = new Laya.Vector3(1, 1, 1);
-		// //设置灯光方向
-		// var mat = directionLight.transform.worldMatrix;
-		// mat.setForward(new Laya.Vector3(-1.0, -1.0, -1.0));
-		// directionLight.transform.worldMatrix = mat;
-
-		console.log(this.scene)
 		//获取场景中的摄像机
 		this.camera = this.scene.getChildByName("Main Camera") as Laya.Camera;
 		//调整相机位置
@@ -139,13 +125,6 @@ export default class Main {
 		//给摄像机添加控制脚本
 		this.camera.addComponent(CameraControlScript)
 
-		// this.camera.addComponent(Laya.CharacterController);
-		//创建刚体碰撞器
-		// let camera = this.camera.addComponent(Laya.Rigidbody3D) as Laya.Rigidbody3D;
-		// debugger
-		// //开启运动类型刚体
-		// camera.isKinematic = true;
-		// camera.isTrigger = true;
 		this.camera.addComponent(triggerScript)
 
 		//加载摄像机到场景
@@ -153,80 +132,7 @@ export default class Main {
 
 		this.scene.physicsSimulation.continuousCollisionDetection = true; 
 
-		
-
-		// //创建方向光
-		// var light = this.scene.addChild(new Laya.DirectionLight()) as Laya.DirectionLight;
-		// //移动灯光位置
-		// light.transform.translate(new Laya.Vector3(0, 2, 5));
-		// //调整灯光方向
-		// var mat:Laya.Matrix4x4 = light.transform.worldMatrix;
-		// mat.setForward(new Laya.Vector3(0, -5, 1));
-		// light.transform.worldMatrix=mat;
-		// //设置灯光漫反射颜色
-		// light.diffuseColor = new Laya.Vector3(0.3, 0.3, 0.3);
-
-
-		// var cube = this.scene.getChildAt(0) as Laya.Sprite3D;
-
-		// var cub1 = this.scene.getChildByName('zhanguan');	
-		// var cub2 = cub1.getChildByName('dimianl');
-		// var cub3 = cub1.getChildByName('dianshiqiang');
-		// var cub4 = cub1.getChildByName('qiang');
-		// var cub5 = cub1.getChildByName('qiangbianshang');
-		// var cub6 = cub1.getChildByName('wenziqiang');
-
-		// debugger
-		// cub3.addComponent(triggerScript)
-		// cub4.addComponent(triggerScript)
-		// cub5.addComponent(triggerScript)
-
-		// //设置碰撞
-    // //获取物理碰撞器
-    // var cubeCollider:Laya.PhysicsCollider = cub1.getComponent(Laya.PhysicsCollider);
-		// var cubeCollider2:Laya.PhysicsCollider = cub2.getComponent(Laya.PhysicsCollider);
-		// var cubeCollider3:Laya.PhysicsCollider = cub3.getComponent(Laya.PhysicsCollider);
-		// var cubeCollider4:Laya.PhysicsCollider = cub4.getComponent(Laya.PhysicsCollider);
-		// var cubeCollider5:Laya.PhysicsCollider = cub5.getComponent(Laya.PhysicsCollider);
-		// var cubeCollider6:Laya.PhysicsCollider = cub6.getComponent(Laya.PhysicsCollider);
-		
-
-		// // //物理碰撞体设置摩擦力
-		// // cubeCollider.friction = 2;
-		// // //物理碰撞体设置弹力
-		// // cubeCollider.restitution = 0.3;
-
-		// // //物理碰撞体设置摩擦力
-		// // cubeCollider2.friction = 2;
-		// // //物理碰撞体设置弹力
-		// // cubeCollider2.restitution = 0.3;
-		// // //标记为触发器,取消物理反馈
-		// // cubeCollider2.isTrigger = true;
-		// // //物理碰撞体设置摩擦力
-		// cubeCollider3.friction = 2;
-		// //物理碰撞体设置弹力
-		// cubeCollider3.restitution = 0.3;
-		// // //标记为触发器,取消物理反馈
-		// // cubeCollider3.isTrigger = true;
-		// // //物理碰撞体设置摩擦力
-		// cubeCollider4.friction = 2;
-		// //物理碰撞体设置弹力
-		// cubeCollider4.restitution = 0.3;
-		// // //标记为触发器,取消物理反馈
-		// // cubeCollider4.isTrigger = true;
-		// // //物理碰撞体设置摩擦力
-		// cubeCollider5.friction = 2;
-		// //物理碰撞体设置弹力
-		// cubeCollider5.restitution = 0.3;
-		// // //标记为触发器,取消物理反馈
-		// // cubeCollider5.isTrigger = true;
-		
-		// //物理碰撞体设置摩擦力
-		// cubeCollider6.friction = 2;
-		// //物理碰撞体设置弹力
-		// cubeCollider6.restitution = 0.3;
-		// // //标记为触发器,取消物理反馈
-		// // cubeCollider6.isTrigger = true;
+	
 
 		constValue.video = new Video()
 
@@ -239,15 +145,15 @@ export default class Main {
     Main.rocker.y = Laya.stage.height - 120;
 
 		//这个是要实现点击按钮能360度旋转
-		this.addButton(Laya.stage.width - 80, Laya.stage.height - 100, 10, 10, "→", function(e:Laya.Event):void {
-			e.stopPropagation()
-			this.beginTurn(true)
-			console.log(this.GetForward)
+		// this.addButton(Laya.stage.width - 80, Laya.stage.height - 100, 10, 10, "→", function(e:Laya.Event):void {
+		// 	e.stopPropagation()
+		// 	this.beginTurn(true)
+		// 	console.log(this.GetForward)
 		
-		},function(e:Laya.Event):void {
-			e.stopPropagation()
-			this.stopTurn()
-		});
+		// },function(e:Laya.Event):void {
+		// 	e.stopPropagation()
+		// 	this.stopTurn()
+		// });
 		
 		//添加客服纸片人
 		var kefuMat = new Laya.UnlitMaterial();
@@ -261,17 +167,11 @@ export default class Main {
 		//设置材质颜色（不需要）
 		// earthMat._Color = new Laya.Vector4(0, 0, 0, 0.1);
 		var kefu = this.scene.addChild(new Laya.MeshSprite3D(Laya.PrimitiveMesh.createQuad(0.7, 1.8))) as Laya.MeshSprite3D;//0.8 * (kefuMat.albedoTexture.width / kefuMat.albedoTexture.height)
-		kefu.transform.translate(new Laya.Vector3(-1.2, 1, 2.3));
+		kefu.transform.translate(new Laya.Vector3(-1.9, 1.1, 3.4));
 		kefu.meshRenderer.material = kefuMat;
 		//添加朝向摄像机脚本
 		kefu.addComponent(kefuCharacterControl).init(this.camera,false)
 
-
-		// let rect:Laya.Sprite = new Laya.Sprite();
-		// rect.graphics.drawRect(0, 0, 200, 200, "#D2691E");
-		// rect.transform.translate(new Laya.Vector3(0.1, 1.8, -2.4));
-		// rect.size(200, 200);
-		// Laya.stage.addChild(rect);
 
 		//添加视频播放按钮
 		var anniuMat = new Laya.UnlitMaterial();
@@ -282,7 +182,7 @@ export default class Main {
 		anniuMat.alphaTestValue = 0.6;
 		anniuMat.renderQueue = Laya.Material.RENDERQUEUE_ALPHATEST
 		var anniu = this.scene.addChild(new Laya.MeshSprite3D(Laya.PrimitiveMesh.createQuad(0.6, 0.6))) as Laya.MeshSprite3D;//0.8 * (kefuMat.albedoTexture.width / kefuMat.albedoTexture.height)
-		anniu.transform.translate(new Laya.Vector3(0.1, 1.8, -2.8));
+		anniu.transform.translate(new Laya.Vector3(0.7, 2.2, -3.5));
 		anniu.meshRenderer.material = anniuMat;
 		
 
@@ -336,12 +236,8 @@ export default class Main {
 					let url = 'https://2dhall-video.ciftis.org/trans-video/20200813/08b05b19efc64b498ca7124746505234.mp4'
 					constValue.video.createVideo(url)
 					constValue.isClickVideoBtn = true
-// if(this.outs.collider.owner.name == 'videoBtn' && !constValue.isClickVideoBtn) {
-				
-// 			}
 				}
 			})
-			
 		}
 	}
 	/**
@@ -363,29 +259,29 @@ export default class Main {
 			this.camera.transform.translate(this._tempVector3);
 	}
 
-	public beginTurn(isLeft):void {
-		constValue.turnSpeed = isLeft ? -50 : 50,
-		constValue.isTurning = true
-		this.changeActionButton.scale(1.2,1.2)
-	}
-	public stopTurn():void {
-		constValue.isTurning = false
-		this.changeActionButton.scale(1,1)
-	}
+	// public beginTurn(isLeft):void {
+	// 	constValue.turnSpeed = isLeft ? -50 : 50,
+	// 	constValue.isTurning = true
+	// 	this.changeActionButton.scale(1.2,1.2)
+	// }
+	// public stopTurn():void {
+	// 	constValue.isTurning = false
+	// 	this.changeActionButton.scale(1,1)
+	// }
 
-	private addButton(x:number, y:number, width:number, height:number, text:string, clikFun:Function, stopClick:Function):void {
-		Laya.loader.load(["res/threeDimen/ui/button.png"], Laya.Handler.create(this, function():void {
-			this.changeActionButton = Laya.stage.addChild(new Laya.Button("res/threeDimen/ui/button.png", text)) as Laya.Button;
-			this.changeActionButton.size(width, height);
-			this.changeActionButton.labelBold = true;
-			this.changeActionButton.labelSize = 10;
-			this.changeActionButton.sizeGrid = "4,4,4,4";
-			this.changeActionButton.scale(Laya.Browser.pixelRatio, Laya.Browser.pixelRatio);
-			this.changeActionButton.pos(x, y);
-			this.changeActionButton.on(Laya.Event.MOUSE_DOWN, this, clikFun);
-			this.changeActionButton.on(Laya.Event.MOUSE_UP, this, stopClick);
-		}));
-  }
+	// private addButton(x:number, y:number, width:number, height:number, text:string, clikFun:Function, stopClick:Function):void {
+	// 	Laya.loader.load(["res/threeDimen/ui/button.png"], Laya.Handler.create(this, function():void {
+	// 		this.changeActionButton = Laya.stage.addChild(new Laya.Button("res/threeDimen/ui/button.png", text)) as Laya.Button;
+	// 		this.changeActionButton.size(width, height);
+	// 		this.changeActionButton.labelBold = true;
+	// 		this.changeActionButton.labelSize = 10;
+	// 		this.changeActionButton.sizeGrid = "4,4,4,4";
+	// 		this.changeActionButton.scale(Laya.Browser.pixelRatio, Laya.Browser.pixelRatio);
+	// 		this.changeActionButton.pos(x, y);
+	// 		this.changeActionButton.on(Laya.Event.MOUSE_DOWN, this, clikFun);
+	// 		this.changeActionButton.on(Laya.Event.MOUSE_UP, this, stopClick);
+	// 	}));
+  // }
 
 	/*游戏帧循环*/
 	private onFrameLoop():void{

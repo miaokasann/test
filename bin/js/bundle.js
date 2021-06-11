@@ -58,7 +58,7 @@ var laya = (function () {
                 this.pro.value = 0;
                 this.pro.sizeGrid = "5,5,5,5";
                 Laya.stage.addChild(this.pro);
-                Laya.timer.loop(10, this, this.changeProgressBar);
+                Laya.timer.loop(1, this, this.changeProgressBar);
             }
         }
         changeProgressBar() {
@@ -299,26 +299,9 @@ var laya = (function () {
             this.point = new Laya.Vector2();
             this._outHitResult = new Laya.HitResult();
             this.outs = new Laya.HitResult();
-            this.touchUIPos = new Laya.Vector2();
-            this.rotateSpeed = 3;
             this.ray = new Laya.Ray(new Laya.Vector3(0, 0, 0), new Laya.Vector3(0, -2, 0));
             this.outHitInfo = new Laya.HitResult();
             this._ray = new Laya.Ray(new Laya.Vector3(0, 0, 0), new Laya.Vector3(0, 0, 0));
-        }
-        init() {
-            this.registorListenner();
-        }
-        registorListenner() {
-            Laya.stage.on(Laya.Event.MOUSE_DOWN, this, this.onTouchStart),
-                Laya.stage.on(Laya.Event.MOUSE_MOVE, this, this.onTouchMove),
-                Laya.stage.on(Laya.Event.MOUSE_UP, this, this.onTouchEnd),
-                Laya.stage.on(Laya.Event.MOUSE_OUT, this, this.onTouchEnd);
-        }
-        clearListenner() {
-            Laya.stage.off(Laya.Event.MOUSE_DOWN, this, this.onTouchStart),
-                Laya.stage.off(Laya.Event.MOUSE_MOVE, this, this.onTouchMove),
-                Laya.stage.off(Laya.Event.MOUSE_UP, this, this.onTouchEnd),
-                Laya.stage.off(Laya.Event.MOUSE_OUT, this, this.onTouchEnd);
         }
         onAwake() {
             Laya.stage.on(Laya.Event.MOUSE_DOWN, this, this.mouseDown);
@@ -333,42 +316,30 @@ var laya = (function () {
         onUpdate() {
             var elapsedTime = Laya.timer.delta;
             if (JoyStick.angle != -1) {
-                let curRadians = Math.atan(this.GetForward.x/this.GetForward.z);
-                console.log("当前指向角度:",curRadians);
-                var speedX = Math.sin(JoyStick.radians+curRadians);
-                console.log("弧度:",JoyStick.radians)
-                console.log("角度:",JoyStick.angle);
-                var speedZ = Math.cos(JoyStick.radians+curRadians);
-                console.log("当前指向:",this.GetForward,"spx",speedX,"spz",speedZ);
-                
-                let x = Math.round(this.GetForward.x * 100)/100 >= 0 ? 1 : -1;
-                let z = Math.round(this.GetForward.z * 100)/100 >= 0 ? 1 : -1;
-                console.log("当前指向取整:",x,z);
-
-                if(z>0){
-                    //转向右后方
+                let curRadians = Math.atan(this.GetForward.x / this.GetForward.z);
+                console.log("当前指向角度:", curRadians);
+                var speedX = Math.sin(JoyStick.radians + curRadians);
+                console.log("弧度:", JoyStick.radians);
+                console.log("角度:", JoyStick.angle);
+                var speedZ = Math.cos(JoyStick.radians + curRadians);
+                console.log("当前指向:", this.GetForward, "spx", speedX, "spz", speedZ);
+                let x = Math.round(this.GetForward.x * 100) / 100 >= 0 ? 1 : -1;
+                let z = Math.round(this.GetForward.z * 100) / 100 >= 0 ? 1 : -1;
+                console.log("当前指向取整:", x, z);
+                if (z > 0) {
                     speedZ = -speedZ;
                     speedX = -speedX;
                 }
-                
-                this.moveForward(this.moveSpeed * elapsedTime * .001 * speedZ );
-                this.moveRight(this.moveSpeed * elapsedTime * .001 * speedX );
+                this.moveForward(this.moveSpeed * elapsedTime * .001 * speedZ);
+                this.moveRight(this.moveSpeed * elapsedTime * .001 * speedX);
                 var lastX = speedX - 10;
                 var lastZ = speedZ - 10;
                 var xV = speedX > 0 ? 1 : -1;
                 var zV = speedZ > 0 ? 1 : -1;
                 if (ConstEvent.isTrigger) {
-                    console.log(ConstEvent.isTrigger);
+                    console.log('是否碰撞', ConstEvent.isTrigger);
                     this.moveForward(this.moveSpeed * elapsedTime * .001 * lastZ * zV);
                     this.moveRight(this.moveSpeed * elapsedTime * .001 * lastX * xV);
-                }
-                var rayOrigin = new Laya.Vector3(0, 0, 0);
-                Laya.Vector3.add(this.camera.transform.position, new Laya.Vector3(speedX, 0, speedZ), rayOrigin);
-                this.ray.origin = rayOrigin;
-                this.camera.parent.scene.physicsSimulation.rayCast(this.ray, this.outHitInfo);
-                if (!this.outHitInfo.succeeded) {
-                    speedX = speedZ = 0;
-                    ConstEvent.cameraTranslate = new Laya.Vector3(speedX, 0, speedZ);
                 }
             }
             else if (!isNaN(this.lastMouseX) && !isNaN(this.lastMouseY) && this.isMouseDown && !JoyStick._isTouchMove && !ConstEvent.isClickVideoBtn) {
@@ -384,10 +355,6 @@ var laya = (function () {
                 this.updateRotation();
                 this.lastMouseX = Laya.stage.mouseX;
                 this.lastMouseY = Laya.stage.mouseY;
-            }
-            else if (ConstEvent.isTurning) {
-                ConstEvent.cameraRotate = new Laya.Vector3(0, .001 * elapsedTime * ConstEvent.turnSpeed, 0);
-                ConstEvent.cameraTranslate = new Laya.Vector3(0, 0, 0);
             }
             else {
                 if (Laya.KeyBoardManager.hasKeyDown(87)) {
@@ -422,28 +389,6 @@ var laya = (function () {
             this.camera.transform.getForward(this._dirForward);
             return this._dirForward;
         }
-        onTouchStart(e) {
-            console.log(e);
-            this.touchId = e.touchId;
-            this.touchUIPos = new Laya.Vector2(e.stageX, e.stageY);
-        }
-        onTouchMove(e) {
-            if (this.touchUIPos && this.touchId == e.touchId && (Math.abs(e.stageX - this.touchUIPos.x) > 5 || Math.abs(e.stageY - this.touchUIPos.y) > 5)) {
-                let t = Laya.timer.delta / 1e3 * this.rotateSpeed;
-                this.camera.transform.rotate(new Laya.Vector3(0, (e.stageX - this.touchUIPos.x) * t), !0, !1);
-                let i = (e.stageY - this.touchUIPos.y) * t;
-                this.camera.transform.localRotationEulerX = this.Clamp(this.camera.transform.localRotationEulerX + i, -30, 30),
-                    this.touchUIPos.x = e.stageX,
-                    this.touchUIPos.y = e.stageY;
-            }
-            
-        }
-        onTouchEnd(e) {
-            this.touchUIPos = null;
-        }
-        Clamp(e, t, i) {
-            return e < t ? t : e > i ? i : e;
-        }
         mouseDown(e) {
             this.camera.transform.localRotation.getYawPitchRoll(this.yawPitchRoll);
             this.lastMouseX = Laya.stage.mouseX;
@@ -452,7 +397,6 @@ var laya = (function () {
             this._startStageY = e.stageY;
             this.isMouseDown = true;
             this.touchMove = false;
-            console.log("鼠标按下,当前指向:",this.GetForward);
         }
         mouseUp(e) {
             this.isMouseDown = false;
@@ -460,10 +404,6 @@ var laya = (function () {
         mouseMove(e) {
             let moveDis = this.distanceSquare(this._startStageX, this._startStageY, e.stageX, e.stageY);
             this.touchMove = moveDis > 0 ? true : false;
-            if(this.isMouseDown){
-                console.log("鼠标按住移动,当前指向:",this.GetForward);
-            }
-            
         }
         moveForward(distance) {
             this._tempVector3.x = 0;
@@ -622,14 +562,6 @@ var laya = (function () {
             Laya.stage.addChild(Main.rocker);
             Main.rocker.x = 25;
             Main.rocker.y = Laya.stage.height - 120;
-            this.addButton(Laya.stage.width - 80, Laya.stage.height - 100, 10, 10, "→", function (e) {
-                e.stopPropagation();
-                this.beginTurn(true);
-                console.log(this.GetForward);
-            }, function (e) {
-                e.stopPropagation();
-                this.stopTurn();
-            });
             var kefuMat = new Laya.UnlitMaterial();
             kefuMat.albedoTexture = Laya.Loader.getRes("res/atlas/kefu2d.png");
             kefuMat.albedoIntensity = 1;
@@ -637,7 +569,7 @@ var laya = (function () {
             kefuMat.alphaTestValue = 0.6;
             kefuMat.renderQueue = Laya.Material.RENDERQUEUE_ALPHATEST;
             var kefu = this.scene.addChild(new Laya.MeshSprite3D(Laya.PrimitiveMesh.createQuad(0.7, 1.8)));
-            kefu.transform.translate(new Laya.Vector3(-1.2, 1, 2.3));
+            kefu.transform.translate(new Laya.Vector3(-1.9, 1.1, 3.4));
             kefu.meshRenderer.material = kefuMat;
             kefu.addComponent(kefuCharacterControl).init(this.camera, false);
             var anniuMat = new Laya.UnlitMaterial();
@@ -647,7 +579,7 @@ var laya = (function () {
             anniuMat.alphaTestValue = 0.6;
             anniuMat.renderQueue = Laya.Material.RENDERQUEUE_ALPHATEST;
             var anniu = this.scene.addChild(new Laya.MeshSprite3D(Laya.PrimitiveMesh.createQuad(0.6, 0.6)));
-            anniu.transform.translate(new Laya.Vector3(0.1, 1.8, -2.8));
+            anniu.transform.translate(new Laya.Vector3(0.7, 2.2, -3.5));
             anniu.meshRenderer.material = anniuMat;
             var planeStaticCollider = anniu.addComponent(Laya.PhysicsCollider);
             var planeShape = new Laya.BoxColliderShape(1, 0, 1);
@@ -694,15 +626,6 @@ var laya = (function () {
             this._tempVector3.z = 0;
             this._tempVector3.x = distance;
             this.camera.transform.translate(this._tempVector3);
-        }
-        beginTurn(isLeft) {
-            ConstEvent.turnSpeed = isLeft ? -50 : 50,
-                ConstEvent.isTurning = true;
-            this.changeActionButton.scale(1.2, 1.2);
-        }
-        stopTurn() {
-            ConstEvent.isTurning = false;
-            this.changeActionButton.scale(1, 1);
         }
         addButton(x, y, width, height, text, clikFun, stopClick) {
             Laya.loader.load(["res/threeDimen/ui/button.png"], Laya.Handler.create(this, function () {

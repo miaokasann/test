@@ -24,7 +24,7 @@ export default class Loading extends ui.LoadingUI {
             Laya.stage.addChild(this.pro);
             // this.showInfo();
             //进度增加的帧循环
-            Laya.timer.loop(10,this,this.changeProgressBar);
+            Laya.timer.loop(1,this,this.changeProgressBar);
         }
     }
 
