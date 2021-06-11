@@ -1,0 +1,1 @@
+{"type":"Scene","props":{"width":600,"runtime":"script/LoadingUI.ts","height":400},"compId":2,"child":[{"type":"Text","props":{"y":200,"x":162,"width":138,"var":"tips","strokeColor":"#d44946","height":23,"fontSize":14,"color":"#000000","runtime":"Laya.Text"},"compId":4}],"loadList":[],"loadList3D":[]}

@@ -17,9 +17,10 @@ export default class triggerScript extends Laya.Script3D {
     //  }
      onTriggerEnter(e) {
         console.log('enter:' + e.owner.name)
-        if(e.owner.name == 'dianshi' || e.owner.name == 'dianshiqiang' || e.owner.name == 'wenziqiang') {
-            constValue.isTrigger = true;
-        } else if (e.owner.name == 'qiang' || e.owner.name == 'qiangbianshang') {
+        // if(e.owner.name == 'dianshi' || e.owner.name == 'dianshiqiang' || e.owner.name == 'wenziqiang') {
+        //     constValue.isTrigger = true;
+        // } else 
+        if (e.owner.name == 'qiang' || e.owner.name == 'qiangbianshang') {
             constValue.isTrigger = false;
         } else {
             constValue.isTrigger = false;
@@ -35,9 +36,10 @@ export default class triggerScript extends Laya.Script3D {
     }
     onTriggerExit(e) {
         console.log('exit:' + e.owner.name)
-        if(e.owner.name == 'dianshi' || e.owner.name == 'dianshiqiang' || e.owner.name == 'wenziqiang') {
-            constValue.isTrigger = false;
-        } else if (e.owner.name == 'qiang' || e.owner.name == 'qiangbianshang') {
+        // if(e.owner.name == 'dianshi' || e.owner.name == 'dianshiqiang' || e.owner.name == 'wenziqiang') {
+        //     constValue.isTrigger = false;
+        // } else 
+        if (e.owner.name == 'qiang' || e.owner.name == 'qiangbianshang') {
             constValue.isTrigger = true;
         } else {
             constValue.isTrigger = false;

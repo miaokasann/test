@@ -10,7 +10,7 @@ export default class Loading extends ui.LoadingUI {
         Laya.stage.bgColor = "#FFF";//设置舞台背景颜色
 
         //加载自定义进度条资源，加载成功后执行onLoad回调方法
-        Laya.loader.load(["UI/progress_loading.png","UI/progress_loading$bar.png"], Laya.Handler.create(this, onLoaded));
+        Laya.loader.load(["ui/progress_loading.png","ui/progress_loading$bar.png"], Laya.Handler.create(this, onLoaded));
         function onLoaded() {
             //创建进度条对象，参数为皮肤地址(使用自定义进度条资源)，也可以用 skin 属性设置
             this.pro = new Laya.ProgressBar("ui/progress_loading.png");

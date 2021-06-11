@@ -1,4 +1,5 @@
 import constValue from './ConstEvent';
+import Main from './Main';
 import JoyStick from './script/RockerUI'
 import Video from './script/VideoUI';
 
@@ -9,6 +10,8 @@ export default class CameraControlScript extends Laya.Script3D {
     private _startStageX: number;
     /** 开始点击时的舞台Y坐标 */
     private _startStageY: number;
+
+    public _dirForward:Laya.Vector3 = new Laya.Vector3()
 
     public _tempVector3:Laya.Vector3 = new Laya.Vector3()
     public yawPitchRoll:Laya.Vector3 = new Laya.Vector3()
@@ -47,6 +50,14 @@ export default class CameraControlScript extends Laya.Script3D {
 
     public video:Video;
 
+
+
+
+
+    public touchId:number;
+    public touchUIPos:Laya.Vector2 = new Laya.Vector2();
+    public rotateSpeed:number = 3;
+
     /*摇杆控制器*/
     constructor() { 
         super(); 
@@ -54,6 +65,22 @@ export default class CameraControlScript extends Laya.Script3D {
         this.outHitInfo = new Laya.HitResult();
         //射线初始化（必须初始化）
 		this._ray = new Laya.Ray(new Laya.Vector3(0, 0, 0), new Laya.Vector3(0, 0, 0));
+    }
+    public init() {
+        this.registorListenner()
+    }
+
+    registorListenner() {
+        Laya.stage.on(Laya.Event.MOUSE_DOWN, this, this.onTouchStart),
+        Laya.stage.on(Laya.Event.MOUSE_MOVE, this, this.onTouchMove),
+        Laya.stage.on(Laya.Event.MOUSE_UP, this, this.onTouchEnd),
+        Laya.stage.on(Laya.Event.MOUSE_OUT, this, this.onTouchEnd)
+    }
+    clearListenner() {
+        Laya.stage.off(Laya.Event.MOUSE_DOWN, this, this.onTouchStart),
+        Laya.stage.off(Laya.Event.MOUSE_MOVE, this, this.onTouchMove),
+        Laya.stage.off(Laya.Event.MOUSE_UP, this, this.onTouchEnd),
+        Laya.stage.off(Laya.Event.MOUSE_OUT, this, this.onTouchEnd)
     }
 
     public onAwake():void{
@@ -74,6 +101,9 @@ export default class CameraControlScript extends Laya.Script3D {
             //通过弧度和速度计算角色在x，z轴上移动的量
             var speedX:number = Math.sin(JoyStick.radians);
             var speedZ:number = Math.cos(JoyStick.radians);
+            console.log(this.GetForward)
+            let x = this.GetForward.x > 0 ? 1 : -1
+            let z = this.GetForward.z > 0 ? 1 : -1
             this.moveForward(this.moveSpeed * elapsedTime * .001 * speedZ);
             this.moveRight(this.moveSpeed * elapsedTime * .001 * speedX);
             var lastX = speedX - 10;
@@ -113,25 +143,25 @@ export default class CameraControlScript extends Laya.Script3D {
             //拿到射线碰撞的物体
             this.camera.parent.scene.physicsSimulation.rayCast(this._ray,this.outs);
             //如果碰撞到物体
-            if (this.outs.succeeded && this.outs.collider.owner.name == "dimianl")
-            {   
-                if(this.touchMove != undefined && !this.touchMove) {
-                    console.log(this.outs.point)
-                    console.log(this.camera.transform.position)
-                    console.log("x",this.outs.point.x - this.camera.transform.position.x)
-                    console.log("z",this.outs.point.z - this.camera.transform.position.z)
-                    // var x = (this.outs.point.x - this.camera.transform.position.x) * elapsedTime * .001 * this.moveSpeed;
-                    // var z = (this.outs.point.z - this.camera.transform.position.z) * elapsedTime * .001 * this.moveSpeed
-                    // constValue.cameraTranslate = new Laya.Vector3(x,0,z)
-                    // Laya.timer.frameLoop(10,this,function(){
-                        this.moveRight((this.outs.point.x - this.camera.transform.position.x) * elapsedTime * .001 * this.moveSpeed)
-                        this.moveForward((this.outs.point.z - this.camera.transform.position.z) * elapsedTime * .001 * this.moveSpeed)
-                    // });
+            // if (this.outs.succeeded && this.outs.collider.owner.name == "dimianl")
+            // {   
+            //     if(this.touchMove != undefined && !this.touchMove) {
+            //         console.log(this.outs.point)
+            //         console.log(this.camera.transform.position)
+            //         console.log("x",this.outs.point.x - this.camera.transform.position.x)
+            //         console.log("z",this.outs.point.z - this.camera.transform.position.z)
+            //         // var x = (this.outs.point.x - this.camera.transform.position.x) * elapsedTime * .001 * this.moveSpeed;
+            //         // var z = (this.outs.point.z - this.camera.transform.position.z) * elapsedTime * .001 * this.moveSpeed
+            //         // constValue.cameraTranslate = new Laya.Vector3(x,0,z)
+            //         // Laya.timer.frameLoop(10,this,function(){
+            //             this.moveRight((this.outs.point.x - this.camera.transform.position.x) * elapsedTime * .001 * this.moveSpeed)
+            //             this.moveForward((this.outs.point.z - this.camera.transform.position.z) * elapsedTime * .001 * this.moveSpeed)
+            //         // });
                     
-                } else {
-                    constValue.cameraTranslate = new Laya.Vector3(0,0,0);
-                }
-            }
+            //     } else {
+            //         constValue.cameraTranslate = new Laya.Vector3(0,0,0);
+            //     }
+            // }
             // if (this.outs.succeeded && this.outs.collider.owner.name == "dianshi") {
             //   debugger
             // }
@@ -145,21 +175,22 @@ export default class CameraControlScript extends Laya.Script3D {
 			var yprElem = this.yawPitchRoll;
 			yprElem.x += offsetX * this.rotaionSpeed * elapsedTime;
 			yprElem.y += offsetY * this.rotaionSpeed * elapsedTime;
-			this.updateRotation();
+			// this.updateRotation();
 		
             this.lastMouseX = Laya.stage.mouseX;
             this.lastMouseY = Laya.stage.mouseY;
         } 
-        // else if(constValue.isTurning) {
-        //     constValue.cameraRotate = new Laya.Vector3(0,.001 * elapsedTime * constValue.turnSpeed,0);
-        //     constValue.cameraTranslate = new Laya.Vector3(0,0,0);
-        // } 
+        else if(constValue.isTurning) {
+            constValue.cameraRotate = new Laya.Vector3(0,.001 * elapsedTime * constValue.turnSpeed,0);
+            constValue.cameraTranslate = new Laya.Vector3(0,0,0);
+        } 
         else {
             if (Laya.KeyBoardManager.hasKeyDown(87)) {
                 if(constValue.isTrigger) {
                     this.moveForward(0.001 * elapsedTime + 1);
                 }
                 this.moveForward(-0.001 * elapsedTime);//W
+                
             }
             if(Laya.KeyBoardManager.hasKeyDown(83)) {
                 if(constValue.isTrigger) {
@@ -172,6 +203,7 @@ export default class CameraControlScript extends Laya.Script3D {
                     this.moveRight(0.001 * elapsedTime + 1);
                 }
                 this.moveRight(-0.001 * elapsedTime);//A
+                
             }
             if(Laya.KeyBoardManager.hasKeyDown(68)) {
                 if(constValue.isTrigger) {
@@ -179,9 +211,42 @@ export default class CameraControlScript extends Laya.Script3D {
                 }
                 this.moveRight(0.001 * elapsedTime);//D
             }
+            
             constValue.cameraTranslate = new Laya.Vector3(0,0,0);
             constValue.cameraRotate = new Laya.Vector3(0,0,0);
         }
+    }
+    public get GetForward():Laya.Vector3 {
+        this.camera.transform.getForward(this._dirForward);
+        return this._dirForward
+    }
+    public onTouchStart(e) {
+        console.log(e)
+        // 3 == Y.instance.gameState && -1 == this.touchId && (this._hasMoveCamera = !1,
+        // this.clickMoving = !1,
+        // Y.instance.ShowClickTips(!1, this.clickMovePos),
+        this.touchId = e.touchId
+        this.touchUIPos = new Laya.Vector2(e.stageX,e.stageY)
+    }
+    public onTouchMove(e) {
+        if (this.touchUIPos && this.touchId == e.touchId && (Math.abs(e.stageX - this.touchUIPos.x) > 5 || Math.abs(e.stageY - this.touchUIPos.y) > 5)) {
+            // this._hasMoveCamera = !0;
+            let t = Laya.timer.delta / 1e3 * this.rotateSpeed;
+            this.camera.transform.rotate(new Laya.Vector3(0,(e.stageX - this.touchUIPos.x) * t), !0, !1);
+            let i = (e.stageY - this.touchUIPos.y) * t;
+            this.camera.transform.localRotationEulerX = this.Clamp(this.camera.transform.localRotationEulerX + i, -30, 30),
+            this.touchUIPos.x = e.stageX,
+            this.touchUIPos.y = e.stageY
+        }
+    }
+    public onTouchEnd(e) {
+        this.touchUIPos = null
+        // this.touchId = -1,
+        // this._hasMoveCamera || this.onMyMouseClick(null),
+        // this._hasMoveCamera = !1)
+    }
+    public Clamp(e, t, i) {
+        return e < t ? t : e > i ? i : e
     }
     public mouseDown(e):void {
         //获得鼠标的旋转值
@@ -215,7 +280,7 @@ export default class CameraControlScript extends Laya.Script3D {
         this._tempVector3.x = 0;
         this._tempVector3.y = 0;
         this._tempVector3.z = distance;
-        this.camera.transform.translate(this._tempVector3);
+        this.camera.transform.translate(new Laya.Vector3(0,0,distance), true);
     }
     /**
      * 向右移动。
@@ -224,7 +289,7 @@ export default class CameraControlScript extends Laya.Script3D {
         this._tempVector3.y = 0;
         this._tempVector3.z = 0;
         this._tempVector3.x = distance;
-        this.camera.transform.translate(this._tempVector3);
+        this.camera.transform.translate(new Laya.Vector3(distance,0,0), true);
     }
     /**
      * 向上移动。

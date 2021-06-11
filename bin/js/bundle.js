@@ -50,7 +50,7 @@ var laya = (function () {
             this.progress = 0;
             Laya.init(600, 400, Laya.WebGL);
             Laya.stage.bgColor = "#FFF";
-            Laya.loader.load(["UI/progress_loading.png", "UI/progress_loading$bar.png"], Laya.Handler.create(this, onLoaded));
+            Laya.loader.load(["ui/progress_loading.png", "ui/progress_loading$bar.png"], Laya.Handler.create(this, onLoaded));
             function onLoaded() {
                 this.pro = new Laya.ProgressBar("ui/progress_loading.png");
                 this.pro.width = 400;
@@ -153,8 +153,10 @@ var laya = (function () {
     }
 
     class ConstEvent {
-        constructor() { }
+        constructor() {
+        }
     }
+    ConstEvent.turnSpeed = 1000;
 
     class videoControlScript extends Laya.Script {
         constructor() {
@@ -280,6 +282,7 @@ var laya = (function () {
         constructor() {
             super();
             this._MaxMoveDistance = 10;
+            this._dirForward = new Laya.Vector3();
             this._tempVector3 = new Laya.Vector3();
             this.yawPitchRoll = new Laya.Vector3();
             this.resultRotation = new Laya.Quaternion();
@@ -296,9 +299,26 @@ var laya = (function () {
             this.point = new Laya.Vector2();
             this._outHitResult = new Laya.HitResult();
             this.outs = new Laya.HitResult();
+            this.touchUIPos = new Laya.Vector2();
+            this.rotateSpeed = 3;
             this.ray = new Laya.Ray(new Laya.Vector3(0, 0, 0), new Laya.Vector3(0, -2, 0));
             this.outHitInfo = new Laya.HitResult();
             this._ray = new Laya.Ray(new Laya.Vector3(0, 0, 0), new Laya.Vector3(0, 0, 0));
+        }
+        init() {
+            this.registorListenner();
+        }
+        registorListenner() {
+            Laya.stage.on(Laya.Event.MOUSE_DOWN, this, this.onTouchStart),
+                Laya.stage.on(Laya.Event.MOUSE_MOVE, this, this.onTouchMove),
+                Laya.stage.on(Laya.Event.MOUSE_UP, this, this.onTouchEnd),
+                Laya.stage.on(Laya.Event.MOUSE_OUT, this, this.onTouchEnd);
+        }
+        clearListenner() {
+            Laya.stage.off(Laya.Event.MOUSE_DOWN, this, this.onTouchStart),
+                Laya.stage.off(Laya.Event.MOUSE_MOVE, this, this.onTouchMove),
+                Laya.stage.off(Laya.Event.MOUSE_UP, this, this.onTouchEnd),
+                Laya.stage.off(Laya.Event.MOUSE_OUT, this, this.onTouchEnd);
         }
         onAwake() {
             Laya.stage.on(Laya.Event.MOUSE_DOWN, this, this.mouseDown);
@@ -315,6 +335,9 @@ var laya = (function () {
             if (JoyStick.angle != -1) {
                 var speedX = Math.sin(JoyStick.radians);
                 var speedZ = Math.cos(JoyStick.radians);
+                console.log(this.GetForward);
+                let x = this.GetForward.x > 0 ? 1 : -1;
+                let z = this.GetForward.z > 0 ? 1 : -1;
                 this.moveForward(this.moveSpeed * elapsedTime * .001 * speedZ);
                 this.moveRight(this.moveSpeed * elapsedTime * .001 * speedX);
                 var lastX = speedX - 10;
@@ -340,27 +363,17 @@ var laya = (function () {
                 this.posY = this.point.y = Laya.MouseManager.instance.mouseY;
                 this.camera.viewportPointToRay(this.point, this._ray);
                 this.camera.parent.scene.physicsSimulation.rayCast(this._ray, this.outs);
-                if (this.outs.succeeded && this.outs.collider.owner.name == "dimianl") {
-                    if (this.touchMove != undefined && !this.touchMove) {
-                        console.log(this.outs.point);
-                        console.log(this.camera.transform.position);
-                        console.log("x", this.outs.point.x - this.camera.transform.position.x);
-                        console.log("z", this.outs.point.z - this.camera.transform.position.z);
-                        this.moveRight((this.outs.point.x - this.camera.transform.position.x) * elapsedTime * .001 * this.moveSpeed);
-                        this.moveForward((this.outs.point.z - this.camera.transform.position.z) * elapsedTime * .001 * this.moveSpeed);
-                    }
-                    else {
-                        ConstEvent.cameraTranslate = new Laya.Vector3(0, 0, 0);
-                    }
-                }
                 var offsetX = Laya.stage.mouseX - this.lastMouseX;
                 var offsetY = Laya.stage.mouseY - this.lastMouseY;
                 var yprElem = this.yawPitchRoll;
                 yprElem.x += offsetX * this.rotaionSpeed * elapsedTime;
                 yprElem.y += offsetY * this.rotaionSpeed * elapsedTime;
-                this.updateRotation();
                 this.lastMouseX = Laya.stage.mouseX;
                 this.lastMouseY = Laya.stage.mouseY;
+            }
+            else if (ConstEvent.isTurning) {
+                ConstEvent.cameraRotate = new Laya.Vector3(0, .001 * elapsedTime * ConstEvent.turnSpeed, 0);
+                ConstEvent.cameraTranslate = new Laya.Vector3(0, 0, 0);
             }
             else {
                 if (Laya.KeyBoardManager.hasKeyDown(87)) {
@@ -391,6 +404,31 @@ var laya = (function () {
                 ConstEvent.cameraRotate = new Laya.Vector3(0, 0, 0);
             }
         }
+        get GetForward() {
+            this.camera.transform.getForward(this._dirForward);
+            return this._dirForward;
+        }
+        onTouchStart(e) {
+            console.log(e);
+            this.touchId = e.touchId;
+            this.touchUIPos = new Laya.Vector2(e.stageX, e.stageY);
+        }
+        onTouchMove(e) {
+            if (this.touchUIPos && this.touchId == e.touchId && (Math.abs(e.stageX - this.touchUIPos.x) > 5 || Math.abs(e.stageY - this.touchUIPos.y) > 5)) {
+                let t = Laya.timer.delta / 1e3 * this.rotateSpeed;
+                this.camera.transform.rotate(new Laya.Vector3(0, (e.stageX - this.touchUIPos.x) * t), !0, !1);
+                let i = (e.stageY - this.touchUIPos.y) * t;
+                this.camera.transform.localRotationEulerX = this.Clamp(this.camera.transform.localRotationEulerX + i, -30, 30),
+                    this.touchUIPos.x = e.stageX,
+                    this.touchUIPos.y = e.stageY;
+            }
+        }
+        onTouchEnd(e) {
+            this.touchUIPos = null;
+        }
+        Clamp(e, t, i) {
+            return e < t ? t : e > i ? i : e;
+        }
         mouseDown(e) {
             this.camera.transform.localRotation.getYawPitchRoll(this.yawPitchRoll);
             this.lastMouseX = Laya.stage.mouseX;
@@ -411,13 +449,13 @@ var laya = (function () {
             this._tempVector3.x = 0;
             this._tempVector3.y = 0;
             this._tempVector3.z = distance;
-            this.camera.transform.translate(this._tempVector3);
+            this.camera.transform.translate(new Laya.Vector3(0, 0, distance), true);
         }
         moveRight(distance) {
             this._tempVector3.y = 0;
             this._tempVector3.z = 0;
             this._tempVector3.x = distance;
-            this.camera.transform.translate(this._tempVector3);
+            this.camera.transform.translate(new Laya.Vector3(distance, 0, 0), true);
         }
         moveVertical(distance) {
             this._tempVector3.x = this._tempVector3.z = 0;
@@ -474,10 +512,7 @@ var laya = (function () {
         }
         onTriggerEnter(e) {
             console.log('enter:' + e.owner.name);
-            if (e.owner.name == 'dianshi' || e.owner.name == 'dianshiqiang' || e.owner.name == 'wenziqiang') {
-                ConstEvent.isTrigger = true;
-            }
-            else if (e.owner.name == 'qiang' || e.owner.name == 'qiangbianshang') {
+            if (e.owner.name == 'qiang' || e.owner.name == 'qiangbianshang') {
                 ConstEvent.isTrigger = false;
             }
             else {
@@ -486,10 +521,7 @@ var laya = (function () {
         }
         onTriggerExit(e) {
             console.log('exit:' + e.owner.name);
-            if (e.owner.name == 'dianshi' || e.owner.name == 'dianshiqiang' || e.owner.name == 'wenziqiang') {
-                ConstEvent.isTrigger = false;
-            }
-            else if (e.owner.name == 'qiang' || e.owner.name == 'qiangbianshang') {
+            if (e.owner.name == 'qiang' || e.owner.name == 'qiangbianshang') {
                 ConstEvent.isTrigger = true;
             }
             else {
@@ -500,19 +532,23 @@ var laya = (function () {
 
     class Main {
         constructor() {
+            this._dirForward = new Laya.Vector3();
             this.posX = 0.0;
             this.posY = 0.0;
             this.point = new Laya.Vector2();
             this._outHitResult = new Laya.HitResult();
-            this.outs = new Laya.HitResult();
+            this.outs = new Array();
             this._tempVector3 = new Laya.Vector3();
             Config.useRetinalCanvas = true;
             Config.isAntialias = true;
             Config.isAlpha = true;
+            let config3d = new Config3D();
+            config3d.lightClusterCount = new Laya.Vector3(100, 100, 100);
+            console.log(config3d);
             if (window["Laya3D"])
                 Laya3D.init(GameConfig.width, GameConfig.height);
             else
-                Laya.init(GameConfig.width, GameConfig.height, Laya["WebGL"]);
+                Laya.init(GameConfig.width, GameConfig.height);
             Laya["Physics"] && Laya["Physics"].enable();
             Laya["DebugPanel"] && Laya["DebugPanel"].enable();
             Laya.stage.scaleMode = GameConfig.scaleMode;
@@ -546,9 +582,6 @@ var laya = (function () {
         PreloadingRes() {
             var resource = [
                 "res/LayaScene_changjing/Conventional/changjing.ls",
-                "res/threeDimen/skinModel/LayaMonkey/Assets/LayaMonkey/LayaMonkey-LayaMonkey.lm",
-                "res/threeDimen/skinModel/LayaMonkey/Assets/LayaMonkey/Materials/T_Diffuse.lmat",
-                "res/threeDimen/skyBox/skyBox2/SkyBox2.lmat",
                 "res/atlas/kefu2d.png",
                 "res/atlas/play.png"
             ];
@@ -557,37 +590,26 @@ var laya = (function () {
         on3DComplete() {
             this.scene = Laya.stage.addChild(Laya.Loader.getRes("res/LayaScene_changjing/Conventional/changjing.ls"));
             console.log(this.scene);
-            this.scene.ambientColor = new Laya.Vector3(0.6, 0, 0);
+            console.log(this.scene);
             this.camera = this.scene.getChildByName("Main Camera");
             this.camera.enableHDR = false;
-            this.camera.addComponent(CameraControlScript);
+            this.camera.addComponent(CameraControlScript).init();
             this.camera.addComponent(triggerScript);
             this.scene.addChild(this.camera);
             this.scene.physicsSimulation.continuousCollisionDetection = true;
-            var cub1 = this.scene.getChildByName('zhanguan');
-            var cub2 = cub1.getChildByName('dimianl');
-            var cub3 = cub1.getChildByName('dianshiqiang');
-            var cub4 = cub1.getChildByName('qiang');
-            var cub5 = cub1.getChildByName('qiangbianshang');
-            var cub6 = cub1.getChildByName('wenziqiang');
-            var cubeCollider2 = cub2.getComponent(Laya.PhysicsCollider);
-            var cubeCollider3 = cub3.getComponent(Laya.PhysicsCollider);
-            var cubeCollider4 = cub4.getComponent(Laya.PhysicsCollider);
-            var cubeCollider5 = cub5.getComponent(Laya.PhysicsCollider);
-            var cubeCollider6 = cub6.getComponent(Laya.PhysicsCollider);
-            cubeCollider3.friction = 2;
-            cubeCollider3.restitution = 0.3;
-            cubeCollider4.friction = 2;
-            cubeCollider4.restitution = 0.3;
-            cubeCollider5.friction = 2;
-            cubeCollider5.restitution = 0.3;
-            cubeCollider6.friction = 2;
-            cubeCollider6.restitution = 0.3;
             ConstEvent.video = new Video();
             Main.rocker = new JoyStick(Laya.stage);
             Laya.stage.addChild(Main.rocker);
             Main.rocker.x = 25;
             Main.rocker.y = Laya.stage.height - 120;
+            this.addButton(Laya.stage.width - 80, Laya.stage.height - 100, 10, 10, "→", function (e) {
+                e.stopPropagation();
+                this.beginTurn(true);
+                console.log(this.GetForward);
+            }, function (e) {
+                e.stopPropagation();
+                this.stopTurn();
+            });
             var kefuMat = new Laya.UnlitMaterial();
             kefuMat.albedoTexture = Laya.Loader.getRes("res/atlas/kefu2d.png");
             kefuMat.albedoIntensity = 1;
@@ -612,9 +634,14 @@ var laya = (function () {
             planeStaticCollider.colliderShape = planeShape;
             planeStaticCollider.friction = 2;
             planeStaticCollider.restitution = 0.3;
+            planeStaticCollider.owner.name = 'videoBtn';
             anniu.addComponent(kefuCharacterControl).init(this.camera, false);
             this.addMouseEvent();
-            Laya.timer.frameLoop(100, this, this.onFrameLoop);
+            Laya.timer.frameLoop(10, this, this.onFrameLoop);
+        }
+        get GetForward() {
+            this.camera.transform.getForward(this._dirForward);
+            return this._dirForward;
         }
         addMouseEvent() {
             Laya.stage.on(Laya.Event.MOUSE_DOWN, this, this.onMouseDown);
@@ -625,14 +652,17 @@ var laya = (function () {
             this.posX = this.point.x = Laya.MouseManager.instance.mouseX;
             this.posY = this.point.y = Laya.MouseManager.instance.mouseY;
             this.camera.viewportPointToRay(this.point, this._ray);
-            this.scene.physicsSimulation.rayCast(this._ray, this.outs);
-            if (this.outs) {
-                if (this.outs.collider.owner.name == 'dianshiqiang' && !ConstEvent.isClickVideoBtn) {
-                    ConstEvent.video = new Video();
-                    Laya.stage.addChild(ConstEvent.video);
-                    let url = 'https://2dhall-video.ciftis.org/trans-video/20200813/08b05b19efc64b498ca7124746505234.mp4';
-                    ConstEvent.video.createVideo(url);
-                }
+            this.scene.physicsSimulation.rayCastAll(this._ray, this.outs);
+            if (this.outs.length !== 0) {
+                this.outs.forEach((item, index) => {
+                    if (item.collider.owner.name == 'videoBtn' && !ConstEvent.isClickVideoBtn) {
+                        ConstEvent.video = new Video();
+                        Laya.stage.addChild(ConstEvent.video);
+                        let url = 'https://2dhall-video.ciftis.org/trans-video/20200813/08b05b19efc64b498ca7124746505234.mp4';
+                        ConstEvent.video.createVideo(url);
+                        ConstEvent.isClickVideoBtn = true;
+                    }
+                });
             }
         }
         moveForward(distance) {
@@ -644,6 +674,28 @@ var laya = (function () {
             this._tempVector3.z = 0;
             this._tempVector3.x = distance;
             this.camera.transform.translate(this._tempVector3);
+        }
+        beginTurn(isLeft) {
+            ConstEvent.turnSpeed = isLeft ? -50 : 50,
+                ConstEvent.isTurning = true;
+            this.changeActionButton.scale(1.2, 1.2);
+        }
+        stopTurn() {
+            ConstEvent.isTurning = false;
+            this.changeActionButton.scale(1, 1);
+        }
+        addButton(x, y, width, height, text, clikFun, stopClick) {
+            Laya.loader.load(["res/threeDimen/ui/button.png"], Laya.Handler.create(this, function () {
+                this.changeActionButton = Laya.stage.addChild(new Laya.Button("res/threeDimen/ui/button.png", text));
+                this.changeActionButton.size(width, height);
+                this.changeActionButton.labelBold = true;
+                this.changeActionButton.labelSize = 10;
+                this.changeActionButton.sizeGrid = "4,4,4,4";
+                this.changeActionButton.scale(Laya.Browser.pixelRatio, Laya.Browser.pixelRatio);
+                this.changeActionButton.pos(x, y);
+                this.changeActionButton.on(Laya.Event.MOUSE_DOWN, this, clikFun);
+                this.changeActionButton.on(Laya.Event.MOUSE_UP, this, stopClick);
+            }));
         }
         onFrameLoop() {
             this.camera.transform.translate(ConstEvent.cameraTranslate, false);

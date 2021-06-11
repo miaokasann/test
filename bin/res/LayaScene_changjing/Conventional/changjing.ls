@@ -5,43 +5,14 @@
 		"props":{
 			"name":"changjing",
 			"ambientColor":[
-				0.212,
-				0.227,
-				0.259
+				0.4369823,
+				0.4369823,
+				0.4369823
 			],
-			"reflectionDecodingFormat":0,
+			"reflectionDecodingFormat":1,
 			"reflection":"Assets/changjingGIReflection.ltcb.ls",
 			"reflectionIntensity":1,
-			"ambientMode":1,
-			"ambientSphericalHarmonics":[
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0
-			],
+			"ambientMode":0,
 			"ambientSphericalHarmonicsIntensity":1,
 			"lightmaps":[],
 			"enableFog":false,
@@ -63,15 +34,15 @@
 					"isStatic":false,
 					"layer":0,
 					"position":[
-						-0.2,
-						1.69,
-						15.7
+						0.14,
+						2.8,
+						14.01
 					],
 					"rotation":[
 						0,
-						0.00383101,
+						-0.0008726012,
 						0,
-						-0.9999927
+						-0.9999996
 					],
 					"scale":[
 						1,
@@ -82,7 +53,7 @@
 					"orthographic":false,
 					"orthographicVerticalSize":10,
 					"fieldOfView":34.9,
-					"enableHDR":true,
+					"enableHDR":false,
 					"nearPlane":0.3,
 					"farPlane":57.18,
 					"viewport":[
@@ -168,7 +139,7 @@
 						1,
 						1
 					],
-					"intensity":0.8,
+					"intensity":0.55,
 					"lightmapBakedType":0,
 					"color":[
 						1,
@@ -221,9 +192,9 @@
 							"isStatic":false,
 							"layer":0,
 							"position":[
-								0.12562,
-								1.8147,
-								-3.3878
+								0.758,
+								2.216,
+								-4.473
 							],
 							"rotation":[
 								-8.146034E-08,
@@ -232,9 +203,9 @@
 								-1
 							],
 							"scale":[
-								1.1509,
-								1.2407,
-								1
+								1.59702,
+								1.521098,
+								3.197728
 							],
 							"meshPath":"Assets/zhanguan-dianshi.lm",
 							"enableRender":true,
@@ -281,9 +252,9 @@
 							"isStatic":false,
 							"layer":0,
 							"position":[
-								0.09304,
-								1.17457,
-								-3.4342
+								0.709,
+								1.431,
+								-4.607
 							],
 							"rotation":[
 								-8.146034E-08,
@@ -292,9 +263,9 @@
 								-1
 							],
 							"scale":[
-								1.1509,
-								1.2407,
-								1
+								1.52947,
+								1.521098,
+								1.835564
 							],
 							"meshPath":"Assets/zhanguan-dianshiqiang.lm",
 							"enableRender":true,
@@ -401,9 +372,9 @@
 							"isStatic":false,
 							"layer":0,
 							"position":[
-								1.1106,
-								2.8492,
-								0.116
+								1.947,
+								3.484,
+								0.7650001
 							],
 							"rotation":[
 								-0.6427875,
@@ -412,9 +383,9 @@
 								3.832582E-09
 							],
 							"scale":[
-								-1,
-								-1.2407,
-								-1.251122
+								-1.523163,
+								-1.521098,
+								-1.64278
 							],
 							"meshPath":"Assets/zhanguan-fangyan.lm",
 							"enableRender":true,
@@ -438,9 +409,9 @@
 							"isStatic":false,
 							"layer":0,
 							"position":[
-								2.7325,
-								2.7809,
-								-1.45
+								4.077,
+								3.4,
+								-1.62
 							],
 							"rotation":[
 								-0.5,
@@ -449,9 +420,9 @@
 								-0.5
 							],
 							"scale":[
-								1,
-								1.1509,
-								1.2407
+								1.523163,
+								1.511185,
+								1.521098
 							],
 							"meshPath":"Assets/zhanguan-fangyan1.lm",
 							"enableRender":true,
@@ -717,9 +688,9 @@
 							"isStatic":false,
 							"layer":0,
 							"position":[
-								-3.273,
-								0.15586,
-								-1.577486
+								-3.81,
+								0.182,
+								-1.814
 							],
 							"rotation":[
 								0.5,
@@ -728,9 +699,9 @@
 								-0.5
 							],
 							"scale":[
-								1,
-								1.1509,
-								1.2407
+								1.523163,
+								1.511185,
+								1.521098
 							],
 							"meshPath":"Assets/zhanguan-wenziqiang.lm",
 							"enableRender":true,
@@ -805,9 +776,9 @@
 							"isStatic":false,
 							"layer":0,
 							"position":[
-								0.1278858,
-								3.78,
-								-2.309386
+								0.656,
+								4.625,
+								-2.929
 							],
 							"rotation":[
 								0.7071068,
@@ -816,9 +787,9 @@
 								-0.7071068
 							],
 							"scale":[
-								1.016128,
-								1.016128,
-								1.060761
+								1.334222,
+								1.547728,
+								1.300493
 							],
 							"meshPath":"Assets/zhanguan-zhaungshi.lm",
 							"enableRender":true,
@@ -900,9 +871,9 @@
 							"isStatic":false,
 							"layer":0,
 							"position":[
-								1.0084,
-								0.15152,
-								-3.4168
+								1.813,
+								0.177,
+								-4.616
 							],
 							"rotation":[
 								0.5,
@@ -911,9 +882,9 @@
 								-0.5
 							],
 							"scale":[
-								1,
-								1.1509,
-								1.2407
+								1.523163,
+								1.511185,
+								1.521098
 							],
 							"meshPath":"Assets/zhanguan-zhuzi.lm",
 							"enableRender":true,
@@ -1005,45 +976,8 @@
 				"child":[]
 			},
 			{
-				"type":"SpotLight",
-				"instanceID":19,
-				"props":{
-					"name":"Spot Light (3)",
-					"active":false,
-					"isStatic":false,
-					"layer":0,
-					"position":[
-						-0.59,
-						9.11,
-						-12.33
-					],
-					"rotation":[
-						0,
-						0.7071068,
-						0.7071068,
-						0
-					],
-					"scale":[
-						1,
-						1,
-						1
-					],
-					"intensity":4,
-					"lightmapBakedType":0,
-					"range":13.5,
-					"spotAngle":62.7,
-					"color":[
-						1,
-						1,
-						1
-					]
-				},
-				"components":[],
-				"child":[]
-			},
-			{
 				"type":"PointLight",
-				"instanceID":20,
+				"instanceID":19,
 				"props":{
 					"name":"Point Light (2)",
 					"active":true,
@@ -1079,16 +1013,16 @@
 			},
 			{
 				"type":"MeshSprite3D",
-				"instanceID":21,
+				"instanceID":20,
 				"props":{
 					"name":"Plane",
 					"active":true,
 					"isStatic":false,
 					"layer":0,
 					"position":[
-						0.098572,
-						1.83,
-						-3.36
+						0.701,
+						2.224,
+						-4.431
 					],
 					"rotation":[
 						-0.7071068,
@@ -1097,9 +1031,9 @@
 						-0.7071068
 					],
 					"scale":[
-						0.1646691,
-						0.42202,
-						0.1039212
+						0.2246147,
+						0.6318774,
+						0.1252414
 					],
 					"meshPath":"Library/unity default resources-Plane.lm",
 					"enableRender":true,
@@ -1107,7 +1041,8 @@
 					"castShadow":false,
 					"materials":[
 						{
-							"path":"Assets/white.lmat"
+							"type":"Laya.BlinnPhongMaterial",
+							"path":"Assets/shipin.lmat"
 						}
 					]
 				},
@@ -1130,16 +1065,16 @@
 			},
 			{
 				"type":"Sprite3D",
-				"instanceID":22,
+				"instanceID":21,
 				"props":{
 					"name":"2",
 					"active":true,
 					"isStatic":false,
 					"layer":0,
 					"position":[
-						-1.48,
-						0.194,
-						2.77
+						-1.8,
+						0.18,
+						3.98
 					],
 					"rotation":[
 						0,
@@ -1148,16 +1083,16 @@
 						-0.7138733
 					],
 					"scale":[
-						1,
-						1,
-						1
+						1.5435,
+						1.5435,
+						1.5435
 					]
 				},
 				"components":[],
 				"child":[
 					{
 						"type":"MeshSprite3D",
-						"instanceID":23,
+						"instanceID":22,
 						"props":{
 							"name":"Arc012",
 							"active":true,
@@ -1217,7 +1152,7 @@
 					},
 					{
 						"type":"MeshSprite3D",
-						"instanceID":24,
+						"instanceID":23,
 						"props":{
 							"name":"对象007",
 							"active":true,
@@ -1256,7 +1191,7 @@
 			},
 			{
 				"type":"DirectionLight",
-				"instanceID":25,
+				"instanceID":24,
 				"props":{
 					"name":"Directional Light (1)",
 					"active":true,
@@ -1278,7 +1213,7 @@
 						1,
 						1
 					],
-					"intensity":0.8,
+					"intensity":0.4,
 					"lightmapBakedType":0,
 					"color":[
 						1,
@@ -1291,10 +1226,10 @@
 			},
 			{
 				"type":"DirectionLight",
-				"instanceID":26,
+				"instanceID":25,
 				"props":{
 					"name":"Directional Light (2)",
-					"active":true,
+					"active":false,
 					"isStatic":false,
 					"layer":0,
 					"position":[
@@ -1313,7 +1248,7 @@
 						1,
 						1
 					],
-					"intensity":0.8,
+					"intensity":0.33,
 					"lightmapBakedType":0,
 					"color":[
 						1,

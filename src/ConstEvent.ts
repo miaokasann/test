@@ -4,8 +4,8 @@
 
 export default class ConstEvent{
 
-    public static turnSpeed:number;
-	// public static isTurning:boolean;
+    public static turnSpeed:number = 1000;
+	public static isTurning:boolean;
     public static isClickVideoBtn:boolean;
 
     /*摄像机移动向量*/
