@@ -368,6 +368,7 @@ var laya = (function () {
                 var yprElem = this.yawPitchRoll;
                 yprElem.x += offsetX * this.rotaionSpeed * elapsedTime;
                 yprElem.y += offsetY * this.rotaionSpeed * elapsedTime;
+                this.updateRotation();
                 this.lastMouseX = Laya.stage.mouseX;
                 this.lastMouseY = Laya.stage.mouseY;
             }
@@ -593,7 +594,7 @@ var laya = (function () {
             console.log(this.scene);
             this.camera = this.scene.getChildByName("Main Camera");
             this.camera.enableHDR = false;
-            this.camera.addComponent(CameraControlScript).init();
+            this.camera.addComponent(CameraControlScript);
             this.camera.addComponent(triggerScript);
             this.scene.addChild(this.camera);
             this.scene.physicsSimulation.continuousCollisionDetection = true;
@@ -616,8 +617,8 @@ var laya = (function () {
             kefuMat.alphaTest = true;
             kefuMat.alphaTestValue = 0.6;
             kefuMat.renderQueue = Laya.Material.RENDERQUEUE_ALPHATEST;
-            var kefu = this.scene.addChild(new Laya.MeshSprite3D(Laya.PrimitiveMesh.createQuad(0.6, 1.7)));
-            kefu.transform.translate(new Laya.Vector3(-1, 1, 2.3));
+            var kefu = this.scene.addChild(new Laya.MeshSprite3D(Laya.PrimitiveMesh.createQuad(0.7, 1.8)));
+            kefu.transform.translate(new Laya.Vector3(-1.2, 1, 2.3));
             kefu.meshRenderer.material = kefuMat;
             kefu.addComponent(kefuCharacterControl).init(this.camera, false);
             var anniuMat = new Laya.UnlitMaterial();

@@ -17,18 +17,35 @@
 		"alphaTest":false,
 		"alphaTestValue":0.5,
 		"renderQueue":2000,
-		"albedoIntensity":1,
+		"albedoIntensity":2.39,
 		"enableLighting":true,
 		"shininess":0.078125,
 		"backDiffuse":1,
 		"backScale":1,
-		"textures":[],
+		"textures":[
+			{
+				"name":"albedoTexture",
+				"path":"3d66Mat-831886-maps-2.jpg",
+				"constructParams":[
+					256,
+					256,
+					0,
+					true
+				],
+				"propertyParams":{
+					"filterMode":1,
+					"wrapModeU":0,
+					"wrapModeV":0,
+					"anisoLevel":1
+				}
+			}
+		],
 		"vectors":[
 			{
 				"name":"tilingOffset",
 				"value":[
-					1,
-					1,
+					8,
+					8,
 					0,
 					0
 				]

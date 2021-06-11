@@ -35,7 +35,7 @@
 					"layer":0,
 					"position":[
 						0.14,
-						2.8,
+						1.7,
 						14.01
 					],
 					"rotation":[
@@ -776,8 +776,8 @@
 							"isStatic":false,
 							"layer":0,
 							"position":[
-								0.656,
-								4.625,
+								0.314,
+								5.166,
 								-2.929
 							],
 							"rotation":[
@@ -787,9 +787,9 @@
 								-0.7071068
 							],
 							"scale":[
-								1.334222,
+								1.603215,
 								1.547728,
-								1.300493
+								1.455677
 							],
 							"meshPath":"Assets/zhanguan-zhaungshi.lm",
 							"enableRender":true,
@@ -1072,9 +1072,9 @@
 					"isStatic":false,
 					"layer":0,
 					"position":[
-						-1.8,
-						0.18,
-						3.98
+						-2.616,
+						0.175,
+						3.963
 					],
 					"rotation":[
 						0,
@@ -1083,9 +1083,9 @@
 						-0.7138733
 					],
 					"scale":[
-						1.5435,
-						1.5435,
-						1.5435
+						1.194885,
+						1.194885,
+						1.194885
 					]
 				},
 				"components":[],
@@ -1257,6 +1257,370 @@
 					]
 				},
 				"components":[],
+				"child":[]
+			},
+			{
+				"type":"MeshSprite3D",
+				"instanceID":26,
+				"props":{
+					"name":"dinglogo",
+					"active":true,
+					"isStatic":false,
+					"layer":0,
+					"position":[
+						0.45,
+						6.31,
+						3.19
+					],
+					"rotation":[
+						-0.7071068,
+						0,
+						0,
+						-0.7071068
+					],
+					"scale":[
+						0.2101426,
+						0.9520662,
+						0.1887045
+					],
+					"meshPath":"Library/unity default resources-Plane.lm",
+					"enableRender":true,
+					"receiveShadows":true,
+					"castShadow":false,
+					"materials":[
+						{
+							"type":"Laya.BlinnPhongMaterial",
+							"path":"Assets/Materials/兴港物业logo.lmat"
+						}
+					]
+				},
+				"components":[
+					{
+						"type":"PhysicsCollider",
+						"restitution":0,
+						"friction":0.5,
+						"rollingFriction":0,
+						"shapes":[
+							{
+								"type":"MeshColliderShape",
+								"mesh":"Library/unity default resources-Plane.lm"
+							}
+						],
+						"isTrigger":false
+					}
+				],
+				"child":[]
+			},
+			{
+				"type":"MeshSprite3D",
+				"instanceID":27,
+				"props":{
+					"name":"neiqiyejieshao",
+					"active":true,
+					"isStatic":false,
+					"layer":0,
+					"position":[
+						3.04,
+						2.0909,
+						-4.431
+					],
+					"rotation":[
+						-0.7071068,
+						0,
+						0,
+						-0.7071068
+					],
+					"scale":[
+						0.2009083,
+						0.6112118,
+						0.1493683
+					],
+					"meshPath":"Library/unity default resources-Plane.lm",
+					"enableRender":true,
+					"receiveShadows":true,
+					"castShadow":false,
+					"materials":[
+						{
+							"type":"Laya.BlinnPhongMaterial",
+							"path":"Assets/Materials/兴港物业.lmat"
+						}
+					]
+				},
+				"components":[
+					{
+						"type":"PhysicsCollider",
+						"restitution":0,
+						"friction":0.5,
+						"rollingFriction":0,
+						"shapes":[
+							{
+								"type":"MeshColliderShape",
+								"mesh":"Library/unity default resources-Plane.lm"
+							}
+						],
+						"isTrigger":false
+					}
+				],
+				"child":[]
+			},
+			{
+				"type":"MeshSprite3D",
+				"instanceID":28,
+				"props":{
+					"name":"neiqiyexiangmu",
+					"active":true,
+					"isStatic":false,
+					"layer":0,
+					"position":[
+						-1.8104,
+						2.061,
+						-4.271
+					],
+					"rotation":[
+						-0.7071068,
+						0,
+						0,
+						-0.7071068
+					],
+					"scale":[
+						0.2328323,
+						0.6112118,
+						0.1553564
+					],
+					"meshPath":"Library/unity default resources-Plane.lm",
+					"enableRender":true,
+					"receiveShadows":true,
+					"castShadow":false,
+					"materials":[
+						{
+							"type":"Laya.BlinnPhongMaterial",
+							"path":"Assets/Materials/兴港项目.lmat"
+						}
+					]
+				},
+				"components":[
+					{
+						"type":"PhysicsCollider",
+						"restitution":0,
+						"friction":0.5,
+						"rollingFriction":0,
+						"shapes":[
+							{
+								"type":"MeshColliderShape",
+								"mesh":"Library/unity default resources-Plane.lm"
+							}
+						],
+						"isTrigger":false
+					}
+				],
+				"child":[]
+			},
+			{
+				"type":"MeshSprite3D",
+				"instanceID":29,
+				"props":{
+					"name":"waiqiyexiangmu",
+					"active":true,
+					"isStatic":false,
+					"layer":0,
+					"position":[
+						-12.51,
+						5.04,
+						10.11
+					],
+					"rotation":[
+						-0.5000088,
+						-0.4999913,
+						0.4999913,
+						-0.5000088
+					],
+					"scale":[
+						0.9320027,
+						2.446615,
+						0.6218747
+					],
+					"meshPath":"Library/unity default resources-Plane.lm",
+					"enableRender":true,
+					"receiveShadows":true,
+					"castShadow":false,
+					"materials":[
+						{
+							"type":"Laya.BlinnPhongMaterial",
+							"path":"Assets/Materials/兴港项目.lmat"
+						}
+					]
+				},
+				"components":[
+					{
+						"type":"PhysicsCollider",
+						"restitution":0,
+						"friction":0.5,
+						"rollingFriction":0,
+						"shapes":[
+							{
+								"type":"MeshColliderShape",
+								"mesh":"Library/unity default resources-Plane.lm"
+							}
+						],
+						"isTrigger":false
+					}
+				],
+				"child":[]
+			},
+			{
+				"type":"MeshSprite3D",
+				"instanceID":30,
+				"props":{
+					"name":"waiqiyejianjie",
+					"active":true,
+					"isStatic":false,
+					"layer":0,
+					"position":[
+						12.82,
+						4.953,
+						10.4
+					],
+					"rotation":[
+						-0.5,
+						0.5,
+						-0.5,
+						-0.5
+					],
+					"scale":[
+						0.8924084,
+						2.610503,
+						0.6379559
+					],
+					"meshPath":"Library/unity default resources-Plane.lm",
+					"enableRender":true,
+					"receiveShadows":true,
+					"castShadow":false,
+					"materials":[
+						{
+							"type":"Laya.BlinnPhongMaterial",
+							"path":"Assets/Materials/兴港物业.lmat"
+						}
+					]
+				},
+				"components":[
+					{
+						"type":"PhysicsCollider",
+						"restitution":0,
+						"friction":0.5,
+						"rollingFriction":0,
+						"shapes":[
+							{
+								"type":"MeshColliderShape",
+								"mesh":"Library/unity default resources-Plane.lm"
+							}
+						],
+						"isTrigger":false
+					}
+				],
+				"child":[]
+			},
+			{
+				"type":"MeshSprite3D",
+				"instanceID":31,
+				"props":{
+					"name":"qianlogo",
+					"active":true,
+					"isStatic":false,
+					"layer":0,
+					"position":[
+						-1.51,
+						0.83,
+						5.04
+					],
+					"rotation":[
+						-0.7071068,
+						0,
+						0,
+						-0.7071068
+					],
+					"scale":[
+						0.07777797,
+						0.3523787,
+						0.0698433
+					],
+					"meshPath":"Library/unity default resources-Plane.lm",
+					"enableRender":true,
+					"receiveShadows":true,
+					"castShadow":false,
+					"materials":[
+						{
+							"type":"Laya.BlinnPhongMaterial",
+							"path":"Assets/Materials/兴港物业logo.lmat"
+						}
+					]
+				},
+				"components":[
+					{
+						"type":"PhysicsCollider",
+						"restitution":0,
+						"friction":0.5,
+						"rollingFriction":0,
+						"shapes":[
+							{
+								"type":"MeshColliderShape",
+								"mesh":"Library/unity default resources-Plane.lm"
+							}
+						],
+						"isTrigger":false
+					}
+				],
+				"child":[]
+			},
+			{
+				"type":"MeshSprite3D",
+				"instanceID":32,
+				"props":{
+					"name":"qianlogo (1)",
+					"active":true,
+					"isStatic":false,
+					"layer":0,
+					"position":[
+						0.65,
+						0.924,
+						-4.27
+					],
+					"rotation":[
+						-0.7071068,
+						0,
+						0,
+						-0.7071068
+					],
+					"scale":[
+						0.09049597,
+						0.4099985,
+						0.08126384
+					],
+					"meshPath":"Library/unity default resources-Plane.lm",
+					"enableRender":true,
+					"receiveShadows":true,
+					"castShadow":false,
+					"materials":[
+						{
+							"type":"Laya.BlinnPhongMaterial",
+							"path":"Assets/Materials/兴港物业logo.lmat"
+						}
+					]
+				},
+				"components":[
+					{
+						"type":"PhysicsCollider",
+						"restitution":0,
+						"friction":0.5,
+						"rollingFriction":0,
+						"shapes":[
+							{
+								"type":"MeshColliderShape",
+								"mesh":"Library/unity default resources-Plane.lm"
+							}
+						],
+						"isTrigger":false
+					}
+				],
 				"child":[]
 			}
 		]

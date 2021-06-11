@@ -175,7 +175,7 @@ export default class CameraControlScript extends Laya.Script3D {
 			var yprElem = this.yawPitchRoll;
 			yprElem.x += offsetX * this.rotaionSpeed * elapsedTime;
 			yprElem.y += offsetY * this.rotaionSpeed * elapsedTime;
-			// this.updateRotation();
+			this.updateRotation();
 		
             this.lastMouseX = Laya.stage.mouseX;
             this.lastMouseY = Laya.stage.mouseY;

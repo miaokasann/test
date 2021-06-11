@@ -137,7 +137,7 @@ export default class Main {
 		this.camera.enableHDR = false; 
 
 		//给摄像机添加控制脚本
-		this.camera.addComponent(CameraControlScript).init();
+		this.camera.addComponent(CameraControlScript)
 
 		// this.camera.addComponent(Laya.CharacterController);
 		//创建刚体碰撞器
@@ -260,8 +260,8 @@ export default class Main {
 		
 		//设置材质颜色（不需要）
 		// earthMat._Color = new Laya.Vector4(0, 0, 0, 0.1);
-		var kefu = this.scene.addChild(new Laya.MeshSprite3D(Laya.PrimitiveMesh.createQuad(0.6, 1.7))) as Laya.MeshSprite3D;//0.8 * (kefuMat.albedoTexture.width / kefuMat.albedoTexture.height)
-		kefu.transform.translate(new Laya.Vector3(-1, 1, 2.3));
+		var kefu = this.scene.addChild(new Laya.MeshSprite3D(Laya.PrimitiveMesh.createQuad(0.7, 1.8))) as Laya.MeshSprite3D;//0.8 * (kefuMat.albedoTexture.width / kefuMat.albedoTexture.height)
+		kefu.transform.translate(new Laya.Vector3(-1.2, 1, 2.3));
 		kefu.meshRenderer.material = kefuMat;
 		//添加朝向摄像机脚本
 		kefu.addComponent(kefuCharacterControl).init(this.camera,false)
