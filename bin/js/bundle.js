@@ -333,13 +333,26 @@ var laya = (function () {
         onUpdate() {
             var elapsedTime = Laya.timer.delta;
             if (JoyStick.angle != -1) {
-                var speedX = Math.sin(JoyStick.radians);
-                var speedZ = Math.cos(JoyStick.radians);
-                console.log(this.GetForward);
-                let x = this.GetForward.x > 0 ? 1 : -1;
-                let z = this.GetForward.z > 0 ? 1 : -1;
-                this.moveForward(this.moveSpeed * elapsedTime * .001 * speedZ);
-                this.moveRight(this.moveSpeed * elapsedTime * .001 * speedX);
+                let curRadians = Math.atan(this.GetForward.x/this.GetForward.z);
+                console.log("当前指向角度:",curRadians);
+                var speedX = Math.sin(JoyStick.radians+curRadians);
+                console.log("弧度:",JoyStick.radians)
+                console.log("角度:",JoyStick.angle);
+                var speedZ = Math.cos(JoyStick.radians+curRadians);
+                console.log("当前指向:",this.GetForward,"spx",speedX,"spz",speedZ);
+                
+                let x = Math.round(this.GetForward.x * 100)/100 >= 0 ? 1 : -1;
+                let z = Math.round(this.GetForward.z * 100)/100 >= 0 ? 1 : -1;
+                console.log("当前指向取整:",x,z);
+
+                if(z>0){
+                    //转向右后方
+                    speedZ = -speedZ;
+                    speedX = -speedX;
+                }
+                
+                this.moveForward(this.moveSpeed * elapsedTime * .001 * speedZ );
+                this.moveRight(this.moveSpeed * elapsedTime * .001 * speedX );
                 var lastX = speedX - 10;
                 var lastZ = speedZ - 10;
                 var xV = speedX > 0 ? 1 : -1;
@@ -423,6 +436,7 @@ var laya = (function () {
                     this.touchUIPos.x = e.stageX,
                     this.touchUIPos.y = e.stageY;
             }
+            
         }
         onTouchEnd(e) {
             this.touchUIPos = null;
@@ -438,6 +452,7 @@ var laya = (function () {
             this._startStageY = e.stageY;
             this.isMouseDown = true;
             this.touchMove = false;
+            console.log("鼠标按下,当前指向:",this.GetForward);
         }
         mouseUp(e) {
             this.isMouseDown = false;
@@ -445,18 +460,22 @@ var laya = (function () {
         mouseMove(e) {
             let moveDis = this.distanceSquare(this._startStageX, this._startStageY, e.stageX, e.stageY);
             this.touchMove = moveDis > 0 ? true : false;
+            if(this.isMouseDown){
+                console.log("鼠标按住移动,当前指向:",this.GetForward);
+            }
+            
         }
         moveForward(distance) {
             this._tempVector3.x = 0;
             this._tempVector3.y = 0;
             this._tempVector3.z = distance;
-            this.camera.transform.translate(new Laya.Vector3(0, 0, distance), true);
+            this.camera.transform.translate(new Laya.Vector3(0, 0, distance), false);
         }
         moveRight(distance) {
             this._tempVector3.y = 0;
             this._tempVector3.z = 0;
             this._tempVector3.x = distance;
-            this.camera.transform.translate(new Laya.Vector3(distance, 0, 0), true);
+            this.camera.transform.translate(new Laya.Vector3(distance, 0, 0), false);
         }
         moveVertical(distance) {
             this._tempVector3.x = this._tempVector3.z = 0;
