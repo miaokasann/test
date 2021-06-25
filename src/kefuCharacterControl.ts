@@ -9,7 +9,7 @@ export default class kefuCharacterControl extends Laya.Script3D {
     constructor() {
         super(),
         this._dir = new Laya.Vector3;
-        this._rotateUpDir = new Laya.Vector3(0,0,0);
+        this._rotateUpDir = new Laya.Vector3(0,1,0);
         this.lookAtRotation = new Laya.Quaternion(0, 0, 0, 0);
         
     }

@@ -854,8 +854,7 @@
 							"castShadow":false,
 							"materials":[
 								{
-									"type":"Laya.BlinnPhongMaterial",
-									"path":"Assets/zhanguan.lmat"
+									"path":"Assets/white.lmat"
 								}
 							]
 						},
@@ -1229,26 +1228,26 @@
 				"instanceID":25,
 				"props":{
 					"name":"Directional Light (2)",
-					"active":false,
+					"active":true,
 					"isStatic":false,
 					"layer":0,
 					"position":[
-						0,
-						0,
-						0
+						0.05,
+						1.62,
+						0.38
 					],
 					"rotation":[
-						0.01660736,
-						0.9695339,
-						0.2345549,
-						-0.06864661
+						0.04658634,
+						0.9929335,
+						0.0323878,
+						-0.1042298
 					],
 					"scale":[
 						1,
 						1,
 						1
 					],
-					"intensity":0.33,
+					"intensity":0.35,
 					"lightmapBakedType":0,
 					"color":[
 						1,
@@ -1616,6 +1615,126 @@
 							{
 								"type":"MeshColliderShape",
 								"mesh":"Library/unity default resources-Plane.lm"
+							}
+						],
+						"isTrigger":false
+					}
+				],
+				"child":[]
+			},
+			{
+				"type":"MeshSprite3D",
+				"instanceID":33,
+				"props":{
+					"name":"Cube",
+					"active":true,
+					"isStatic":false,
+					"layer":0,
+					"position":[
+						0.116,
+						10.038,
+						23.62
+					],
+					"rotation":[
+						0,
+						0,
+						0,
+						-1
+					],
+					"scale":[
+						27.13892,
+						3.103289,
+						0.75612
+					],
+					"meshPath":"Library/unity default resources-Cube.lm",
+					"enableRender":true,
+					"receiveShadows":true,
+					"castShadow":false,
+					"materials":[
+						{
+							"path":"Assets/blue.lmat"
+						}
+					]
+				},
+				"components":[
+					{
+						"type":"PhysicsCollider",
+						"restitution":0,
+						"friction":0.5,
+						"rollingFriction":0,
+						"shapes":[
+							{
+								"type":"BoxColliderShape",
+								"center":[
+									0,
+									0,
+									0
+								],
+								"size":[
+									1,
+									1,
+									1
+								]
+							}
+						],
+						"isTrigger":false
+					}
+				],
+				"child":[]
+			},
+			{
+				"type":"MeshSprite3D",
+				"instanceID":34,
+				"props":{
+					"name":"Cube (1)",
+					"active":true,
+					"isStatic":false,
+					"layer":0,
+					"position":[
+						0.116,
+						0.818,
+						23.59
+					],
+					"rotation":[
+						0,
+						0,
+						0,
+						-1
+					],
+					"scale":[
+						27.13892,
+						1.551488,
+						0.8383103
+					],
+					"meshPath":"Library/unity default resources-Cube.lm",
+					"enableRender":true,
+					"receiveShadows":true,
+					"castShadow":false,
+					"materials":[
+						{
+							"path":"Assets/blue.lmat"
+						}
+					]
+				},
+				"components":[
+					{
+						"type":"PhysicsCollider",
+						"restitution":0,
+						"friction":0.5,
+						"rollingFriction":0,
+						"shapes":[
+							{
+								"type":"BoxColliderShape",
+								"center":[
+									0,
+									0,
+									0
+								],
+								"size":[
+									1,
+									1,
+									1
+								]
 							}
 						],
 						"isTrigger":false

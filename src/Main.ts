@@ -1,11 +1,11 @@
 import GameConfig from "./GameConfig";
-
 import JoyStick from "./script/RockerUI";
 import CameraControlScript from './CameraControlScript';
 import constValue from './ConstEvent';
 import kefuCharacterControl from './kefuCharacterControl';
 import Video from './script/VideoUI';
 import triggerScript from "./triggerScript";
+import CommandBuffer_Outline from "./miaobian"
 
 export default class Main {
 	/*3D摄像机*/
@@ -29,6 +29,20 @@ export default class Main {
 	public outs:Array<Laya.HitResult> = new Array<Laya.HitResult>();
 	// public outs:Laya.HitResult = new Laya.HitResult();
 	public _tempVector3:Laya.Vector3 = new Laya.Vector3()
+
+
+	public CommandBuffer:Laya.CommandBuffer;
+
+	public miao:CommandBuffer_Outline;
+
+
+	private hasSelectedSprite:Laya.Sprite3D;
+  private hasSelectedRigidBody:Laya.Rigidbody3D;
+	private delX:number;
+	private delY:number;
+	private ZERO:Laya.Vector3 = new Laya.Vector3(0,0,0);
+	private ONE:Laya.Vector3 = new Laya.Vector3(0,0,0);
+	private tmpVector:Laya.Vector3 = new Laya.Vector3(0, 0, 0);
 
 	constructor() {
 		
@@ -107,6 +121,11 @@ export default class Main {
 
 		//获取场景中的摄像机
 		this.camera = this.scene.getChildByName("Main Camera") as Laya.Camera;
+
+		this.miao = new CommandBuffer_Outline()
+		this.miao.init(this.camera)
+		
+
 		//调整相机位置
 		// this.camera.transform.translate(new Laya.Vector3(0,0,-10))
 		//设置相机横纵比
@@ -130,10 +149,19 @@ export default class Main {
 		//加载摄像机到场景
 		this.scene.addChild(this.camera);
 
+
+
 		this.scene.physicsSimulation.continuousCollisionDetection = true; 
 
 	
-
+		
+		let aaa = this.scene.getChildByName('zhanguan')
+		
+		let bb = aaa.getChildByName('dianshi')
+		
+		
+		
+		//实例化视频窗口
 		constValue.video = new Video()
 
 
@@ -143,6 +171,14 @@ export default class Main {
 
 		Main.rocker.x = 25;
     Main.rocker.y = Laya.stage.height - 120;
+
+		this.addButton(Laya.stage.width - 140, Laya.stage.height - 50, 38, 12, "平面展台", function(e:Laya.Event):void {
+			e.stopPropagation()
+			window.location.href = 'http://www.baidu.com'
+		},function(e:Laya.Event):void {
+			e.stopPropagation()
+			
+		});
 
 		//这个是要实现点击按钮能360度旋转
 		// this.addButton(Laya.stage.width - 80, Laya.stage.height - 100, 10, 10, "→", function(e:Laya.Event):void {
@@ -165,7 +201,6 @@ export default class Main {
 		kefuMat.renderQueue = Laya.Material.RENDERQUEUE_ALPHATEST
 		
 		//设置材质颜色（不需要）
-		// earthMat._Color = new Laya.Vector4(0, 0, 0, 0.1);
 		var kefu = this.scene.addChild(new Laya.MeshSprite3D(Laya.PrimitiveMesh.createQuad(0.7, 1.8))) as Laya.MeshSprite3D;//0.8 * (kefuMat.albedoTexture.width / kefuMat.albedoTexture.height)
 		kefu.transform.translate(new Laya.Vector3(-1.9, 1.1, 3.4));
 		kefu.meshRenderer.material = kefuMat;
@@ -225,21 +260,66 @@ export default class Main {
 		//产生射线
 		this.camera.viewportPointToRay(this.point,this._ray);
 		//拿到射线碰撞的物体
-		this.scene.physicsSimulation.rayCastAll(this._ray,this.outs);
+		this.scene.physicsSimulation.rayCast(this._ray,this._outHitResult);
+
+		
+		this.miao.RemoveCommandBuffer_Outline()
 		//如果碰撞到物体
-		if (this.outs.length !== 0)
+		if (this._outHitResult.succeeded)
 		{
-			this.outs.forEach((item, index) => {
-				if(item.collider.owner.name == 'videoBtn' && !constValue.isClickVideoBtn) {
+			// this.outs.forEach((item, index) => {
+				if(this._outHitResult.collider.owner.name == 'videoBtn' && !constValue.isClickVideoBtn) {
 					constValue.video = new Video()
 					Laya.stage.addChild(constValue.video);
 					let url = 'https://2dhall-video.ciftis.org/trans-video/20200813/08b05b19efc64b498ca7124746505234.mp4'
 					constValue.video.createVideo(url)
 					constValue.isClickVideoBtn = true
+				} else {
+					this.miao.AddCommandBuffet_Outline(this._outHitResult.collider.owner as Laya.Sprite3D)
+					var collider:Laya.Rigidbody3D = this._outHitResult.collider as Laya.Rigidbody3D;
+            this.hasSelectedSprite = collider.owner as Laya.Sprite3D;
+						let tmpPos = this.hasSelectedSprite.transform.position
+						this.tmpVector.setValue(tmpPos.x, tmpPos.y, tmpPos.z);
+            this.hasSelectedRigidBody = collider;
+            collider.angularFactor = this.ZERO;
+            collider.angularVelocity = this.ZERO;
+            collider.linearFactor = this.ZERO;
+            collider.linearVelocity = this.ZERO;
 				}
-			})
+				Laya.stage.on(Laya.Event.MOUSE_MOVE, this, this.onMouseMove);
+				console.log(this._outHitResult.collider)
+			// })
 		}
 	}
+	public onMouseMove():void
+    {
+        this.delX = Laya.MouseManager.instance.mouseX - this.posX;
+				this.delY = Laya.MouseManager.instance.mouseY - this.posY;
+        if (this.hasSelectedSprite) {
+            this.tmpVector.setValue(this.delX / 4, 0, this.delY / 4);
+            this.hasSelectedRigidBody.linearVelocity = this.tmpVector;
+        }
+        this.posX = Laya.MouseManager.instance.mouseX;
+        this.posY = Laya.MouseManager.instance.mouseY;
+    }
+    public onMouseUp():void
+    {
+        Laya.stage.off(Laya.Event.MOUSE_MOVE, this, this.onMouseMove);
+        if (this.hasSelectedSprite) {
+            this.hasSelectedRigidBody.angularFactor = this.ONE;
+            this.hasSelectedRigidBody.linearFactor = this.ONE;
+            this.hasSelectedSprite = null;
+        }
+    }
+    public onMouseOut():void
+    {
+        Laya.stage.off(Laya.Event.MOUSE_MOVE, this, this.onMouseMove);
+        if (this.hasSelectedSprite) {
+            this.hasSelectedRigidBody.angularFactor = this.ONE;
+            this.hasSelectedRigidBody.linearFactor = this.ONE;
+            this.hasSelectedSprite = null;
+        }
+    }
 	/**
      * 向前移动。
      */
@@ -269,19 +349,19 @@ export default class Main {
 	// 	this.changeActionButton.scale(1,1)
 	// }
 
-	// private addButton(x:number, y:number, width:number, height:number, text:string, clikFun:Function, stopClick:Function):void {
-	// 	Laya.loader.load(["res/threeDimen/ui/button.png"], Laya.Handler.create(this, function():void {
-	// 		this.changeActionButton = Laya.stage.addChild(new Laya.Button("res/threeDimen/ui/button.png", text)) as Laya.Button;
-	// 		this.changeActionButton.size(width, height);
-	// 		this.changeActionButton.labelBold = true;
-	// 		this.changeActionButton.labelSize = 10;
-	// 		this.changeActionButton.sizeGrid = "4,4,4,4";
-	// 		this.changeActionButton.scale(Laya.Browser.pixelRatio, Laya.Browser.pixelRatio);
-	// 		this.changeActionButton.pos(x, y);
-	// 		this.changeActionButton.on(Laya.Event.MOUSE_DOWN, this, clikFun);
-	// 		this.changeActionButton.on(Laya.Event.MOUSE_UP, this, stopClick);
-	// 	}));
-  // }
+	private addButton(x:number, y:number, width:number, height:number, text:string, clikFun:Function, stopClick:Function):void {
+		Laya.loader.load(["res/atlas/button.png"], Laya.Handler.create(this, function():void {
+			this.changeActionButton = Laya.stage.addChild(new Laya.Button("res/atlas/button.png", text)) as Laya.Button;
+			this.changeActionButton.size(width, height);
+			this.changeActionButton.labelBold = true;
+			this.changeActionButton.labelSize = 6;
+			this.changeActionButton.sizeGrid = "4,4,4,4";
+			this.changeActionButton.scale(Laya.Browser.pixelRatio, Laya.Browser.pixelRatio);
+			this.changeActionButton.pos(x, y);
+			this.changeActionButton.on(Laya.Event.MOUSE_DOWN, this, clikFun);
+			this.changeActionButton.on(Laya.Event.MOUSE_UP, this, stopClick);
+		}));
+  }
 
 	/*游戏帧循环*/
 	private onFrameLoop():void{

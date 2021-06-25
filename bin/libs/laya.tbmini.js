@@ -879,22 +879,17 @@ window.tbMiniGame = function (exports, Laya) {
 	    }
 	    static onReadNativeCallBack(url, type = null, thisLoader = null, errorCode = 0, data = null) {
 	        if (!errorCode) {
-	            try {
-	                var tempData;
-	                if (type == Laya.Loader.JSON || type == Laya.Loader.ATLAS || type == Laya.Loader.PREFAB || type == Laya.Loader.PLF) {
-	                    tempData = TBMiniAdapter.getJson(data.data);
-	                }
-	                else if (type == Laya.Loader.XML) {
-	                    tempData = Laya.Utils.parseXMLFromString(data.data);
-	                }
-	                else {
-	                    tempData = data.data;
-	                }
-	                thisLoader.onLoaded(tempData);
+	            var tempData;
+	            if (type == Laya.Loader.JSON || type == Laya.Loader.ATLAS || type == Laya.Loader.PREFAB || type == Laya.Loader.PLF) {
+	                tempData = TBMiniAdapter.getJson(data.data);
 	            }
-	            catch (err) {
-	                thisLoader.onError && thisLoader.onError(data);
+	            else if (type == Laya.Loader.XML) {
+	                tempData = Laya.Utils.parseXMLFromString(data.data);
 	            }
+	            else {
+	                tempData = data.data;
+	            }
+	            thisLoader.onLoaded(tempData);
 	        }
 	        else if (errorCode == 1) {
 	            thisLoader.onError && thisLoader.onError(data);
@@ -1147,14 +1142,6 @@ window.tbMiniGame = function (exports, Laya) {
 	            var _source;
 	            if (TBMiniAdapter.idx == 1) {
 	                _source = TBMiniAdapter.window.canvas.getRealCanvas();
-	                if (!my.isIDE) {
-	                    var originfun = _source.getContext;
-	                    _source.getContext = function (type) {
-	                        var gl = originfun.apply(_source, [type]);
-	                        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-	                        return gl;
-	                    };
-	                }
 	            }
 	            else {
 	                _source = TBMiniAdapter._preCreateElement(type);

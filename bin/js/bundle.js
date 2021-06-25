@@ -342,20 +342,6 @@ var laya = (function () {
                     this.moveRight(this.moveSpeed * elapsedTime * .001 * lastX * xV);
                 }
             }
-            else if (!isNaN(this.lastMouseX) && !isNaN(this.lastMouseY) && this.isMouseDown && !JoyStick._isTouchMove && !ConstEvent.isClickVideoBtn) {
-                this.posX = this.point.x = Laya.MouseManager.instance.mouseX;
-                this.posY = this.point.y = Laya.MouseManager.instance.mouseY;
-                this.camera.viewportPointToRay(this.point, this._ray);
-                this.camera.parent.scene.physicsSimulation.rayCast(this._ray, this.outs);
-                var offsetX = Laya.stage.mouseX - this.lastMouseX;
-                var offsetY = Laya.stage.mouseY - this.lastMouseY;
-                var yprElem = this.yawPitchRoll;
-                yprElem.x += offsetX * this.rotaionSpeed * elapsedTime;
-                yprElem.y += offsetY * this.rotaionSpeed * elapsedTime;
-                this.updateRotation();
-                this.lastMouseX = Laya.stage.mouseX;
-                this.lastMouseY = Laya.stage.mouseY;
-            }
             else {
                 if (Laya.KeyBoardManager.hasKeyDown(87)) {
                     if (ConstEvent.isTrigger) {
@@ -441,7 +427,7 @@ var laya = (function () {
         constructor() {
             super(),
                 this._dir = new Laya.Vector3;
-            this._rotateUpDir = new Laya.Vector3(0, 0, 0);
+            this._rotateUpDir = new Laya.Vector3(0, 1, 0);
             this.lookAtRotation = new Laya.Quaternion(0, 0, 0, 0);
         }
         init(e, t) {
@@ -490,6 +476,260 @@ var laya = (function () {
         }
     }
 
+    var BlurVS = "#include \"Lighting.glsl\";\n#if defined(GL_FRAGMENT_PRECISION_HIGH)// 原来的写法会被我们自己的解析流程处理，而我们的解析是不认内置宏的，导致被删掉，所以改成 if defined 了\n\tprecision highp float;\n#else\n\tprecision mediump float;\n#endif\nattribute vec4 a_PositionTexcoord;\nvarying vec2 v_Texcoord0;\n\nvoid main() {\n\tgl_Position = vec4(a_PositionTexcoord.xy, 0.0, 1.0);\n\tv_Texcoord0 = a_PositionTexcoord.zw;\n\tgl_Position = remapGLPositionZ(gl_Position);\n}";
+
+    var BlurHorizentalFS = "#if defined(GL_FRAGMENT_PRECISION_HIGH)// 原来的写法会被我们自己的解析流程处理，而我们的解析是不认内置宏的，导致被删掉，所以改成 if defined 了\n\tprecision highp float;\n#else\n\tprecision mediump float;\n#endif\n\nvarying vec2 v_Texcoord0;\nuniform sampler2D u_MainTex;\nuniform vec4 u_MainTex_TexelSize;\nuniform float u_DownSampleValue;\n\nvoid main()\n{\n    vec4 color = vec4(0.0,0.0,0.0,0.0);\n    vec2 uv = v_Texcoord0;\n    vec2 uvOffset = vec2(1.0,0.0)*u_MainTex_TexelSize.xy*u_DownSampleValue;\n    uv = uv - uvOffset*3.0;\n    //高斯参数\n    color+=0.0205*texture2D(u_MainTex,uv);\n    uv+=uvOffset;\n    color+=0.0855*texture2D(u_MainTex,uv);\n    uv+=uvOffset;\n    color+=0.232*texture2D(u_MainTex,uv);\n    uv+=uvOffset;\n    color+=0.324*texture2D(u_MainTex,uv);\n    uv+=uvOffset;\n    color+=0.232*texture2D(u_MainTex,uv);\n    uv+=uvOffset;\n    color+=0.0855*texture2D(u_MainTex,uv);\n    uv+=uvOffset;\n    color+=0.0205*texture2D(u_MainTex,uv);\n\n    gl_FragColor = color;\n    \n\n    \n}";
+
+    var BlurVerticalFS = "#if defined(GL_FRAGMENT_PRECISION_HIGH)// 原来的写法会被我们自己的解析流程处理，而我们的解析是不认内置宏的，导致被删掉，所以改成 if defined 了\n\tprecision highp float;\n#else\n\tprecision mediump float;\n#endif\n\nvarying vec2 v_Texcoord0;\nuniform sampler2D u_MainTex;\nuniform vec4 u_MainTex_TexelSize;\nuniform float u_DownSampleValue;\n\nvoid main()\n{\n    vec4 color = vec4(0.0,0.0,0.0,0.0);\n    vec2 uv = v_Texcoord0;\n    vec2 uvOffset = vec2(0.0,1.0)*u_MainTex_TexelSize.xy*u_DownSampleValue;\n    uv = uv - uvOffset*3.0;\n    //高斯参数\n    color+=0.0205*texture2D(u_MainTex,uv);\n    uv+=uvOffset;\n    color+=0.0855*texture2D(u_MainTex,uv);\n    uv+=uvOffset;\n    color+=0.232*texture2D(u_MainTex,uv);\n    uv+=uvOffset;\n    color+=0.324*texture2D(u_MainTex,uv);\n    uv+=uvOffset;\n    color+=0.232*texture2D(u_MainTex,uv);\n    uv+=uvOffset;\n    color+=0.0855*texture2D(u_MainTex,uv);\n    uv+=uvOffset;\n    color+=0.0205*texture2D(u_MainTex,uv);\n\n    gl_FragColor = color;\n    \n\n    \n}";
+
+    var BlurDownSampleFS = "#if defined(GL_FRAGMENT_PRECISION_HIGH)// 原来的写法会被我们自己的解析流程处理，而我们的解析是不认内置宏的，导致被删掉，所以改成 if defined 了\n\tprecision highp float;\n#else\n\tprecision mediump float;\n#endif\n\nvarying vec2 v_Texcoord0;\nuniform sampler2D u_MainTex;\nuniform vec4 u_MainTex_TexelSize;\n\nvoid main()\n{\n    vec4 color = vec4(0.0,0.0,0.0,0.0);\n    color += texture2D(u_MainTex,v_Texcoord0+u_MainTex_TexelSize.xy*vec2(1.0,0.0));\n\tcolor += texture2D(u_MainTex,v_Texcoord0+u_MainTex_TexelSize.xy*vec2(-1.0,0.0));\n\tcolor += texture2D(u_MainTex,v_Texcoord0+u_MainTex_TexelSize.xy*vec2(0.0,-1.0));\n\tcolor += texture2D(u_MainTex,v_Texcoord0+u_MainTex_TexelSize.xy*vec2(0.0,1.0));\n    gl_FragColor = color/4.0;\n    //gl_FragColor = vec4(1.0,0.0,0.0,1.0);\n}";
+
+    var BlurDownSampleVS = "#include \"Lighting.glsl\";\n#if defined(GL_FRAGMENT_PRECISION_HIGH)// 原来的写法会被我们自己的解析流程处理，而我们的解析是不认内置宏的，导致被删掉，所以改成 if defined 了\n\tprecision highp float;\n#else\n\tprecision mediump float;\n#endif\nattribute vec4 a_PositionTexcoord;\nvarying vec2 v_Texcoord0;\n\nvoid main() {\n\tgl_Position = vec4(a_PositionTexcoord.xy, 0.0, 1.0);\n\tv_Texcoord0 = a_PositionTexcoord.zw;\n\tgl_Position = remapGLPositionZ(gl_Position);\n}";
+
+    var BlurEdgeAdd = "#if defined(GL_FRAGMENT_PRECISION_HIGH)// 原来的写法会被我们自己的解析流程处理，而我们的解析是不认内置宏的，导致被删掉，所以改成 if defined 了\n\tprecision highp float;\n#else\n\tprecision mediump float;\n#endif\n\nvarying vec2 v_Texcoord0;\nuniform sampler2D u_MainTex;\nuniform sampler2D u_sourceTexture0;\n\nvoid main()\n{\n    vec2 uv = v_Texcoord0;\n    vec4 mainColor = texture2D(u_MainTex,uv);\n    vec4 sourceColor = texture2D(u_sourceTexture0,uv);\n    float factor = step(sourceColor.x+sourceColor.y+sourceColor.z,0.001);\n    vec4 color = mix(sourceColor,mainColor,factor);\n    gl_FragColor =color;\n}";
+
+    var BlurEdgeSub = "#if defined(GL_FRAGMENT_PRECISION_HIGH)// 原来的写法会被我们自己的解析流程处理，而我们的解析是不认内置宏的，导致被删掉，所以改成 if defined 了\n\tprecision highp float;\n#else\n\tprecision mediump float;\n#endif\n\nvarying vec2 v_Texcoord0;\nuniform sampler2D u_sourceTexture0;\nuniform sampler2D u_sourceTexture1;\n\nvoid main()\n{\n    vec2 uv = v_Texcoord0;\n    vec4 blurColor = texture2D(u_sourceTexture0,uv);\n    vec4 clearColor = texture2D(u_sourceTexture1,uv);\n    float factor = step(clearColor.x+clearColor.y+clearColor.z,0.001);\n    vec4 color = blurColor*factor;\n    color = (1.0-step(color.x+color.y+color.z,0.15))*vec4(1.0,0.0,0.0,1.0);\n    gl_FragColor = color;\n}";
+
+    class BlurEffect extends Laya.PostProcessEffect {
+        constructor() {
+            super();
+            this._shader = null;
+            this._shaderData = new Laya.ShaderData();
+            this._downSampleNum = 1;
+            this._blurSpreadSize = 1;
+            this._blurIterations = 2;
+            this._texSize = new Laya.Vector4(1.0, 1.0, 1.0, 1.0);
+            this._shader = Laya.Shader3D.find("blurEffect");
+            this._tempRenderTexture = new Array(13);
+        }
+        static init() {
+            var attributeMap = {
+                'a_PositionTexcoord': Laya.VertexMesh.MESH_POSITION0
+            };
+            var uniformMap = {
+                'u_MainTex': Laya.Shader3D.PERIOD_MATERIAL,
+                'u_MainTex_TexelSize': Laya.Shader3D.PERIOD_MATERIAL,
+                'u_DownSampleValue': Laya.Shader3D.PERIOD_MATERIAL,
+                'u_sourceTexture0': Laya.Shader3D.PERIOD_MATERIAL,
+                'u_sourceTexture1': Laya.Shader3D.PERIOD_MATERIAL
+            };
+            var shader = Laya.Shader3D.add("blurEffect");
+            var subShader = new Laya.SubShader(attributeMap, uniformMap);
+            shader.addSubShader(subShader);
+            var shaderpass = subShader.addShaderPass(BlurDownSampleVS, BlurDownSampleFS);
+            var renderState = shaderpass.renderState;
+            renderState.depthTest = Laya.RenderState.DEPTHTEST_ALWAYS;
+            renderState.depthWrite = false;
+            renderState.cull = Laya.RenderState.CULL_NONE;
+            renderState.blend = Laya.RenderState.BLEND_DISABLE;
+            subShader = new Laya.SubShader(attributeMap, uniformMap);
+            shader.addSubShader(subShader);
+            shaderpass = subShader.addShaderPass(BlurVS, BlurVerticalFS);
+            renderState = shaderpass.renderState;
+            renderState.depthTest = Laya.RenderState.DEPTHTEST_ALWAYS;
+            renderState.depthWrite = false;
+            renderState.cull = Laya.RenderState.CULL_NONE;
+            renderState.blend = Laya.RenderState.BLEND_DISABLE;
+            subShader = new Laya.SubShader(attributeMap, uniformMap);
+            shader.addSubShader(subShader);
+            shaderpass = subShader.addShaderPass(BlurVS, BlurHorizentalFS);
+            renderState = shaderpass.renderState;
+            renderState.depthTest = Laya.RenderState.DEPTHTEST_ALWAYS;
+            renderState.depthWrite = false;
+            renderState.cull = Laya.RenderState.CULL_NONE;
+            renderState.blend = Laya.RenderState.BLEND_DISABLE;
+            subShader = new Laya.SubShader(attributeMap, uniformMap);
+            shader.addSubShader(subShader);
+            shaderpass = subShader.addShaderPass(BlurVS, BlurEdgeSub);
+            renderState = shaderpass.renderState;
+            renderState.depthTest = Laya.RenderState.DEPTHTEST_ALWAYS;
+            renderState.depthWrite = false;
+            renderState.cull = Laya.RenderState.CULL_NONE;
+            renderState.blend = Laya.RenderState.BLEND_DISABLE;
+            subShader = new Laya.SubShader(attributeMap, uniformMap);
+            shader.addSubShader(subShader);
+            shaderpass = subShader.addShaderPass(BlurVS, BlurEdgeAdd);
+            renderState = shaderpass.renderState;
+            renderState.depthTest = Laya.RenderState.DEPTHTEST_ALWAYS;
+            renderState.depthWrite = false;
+            renderState.cull = Laya.RenderState.CULL_NONE;
+            renderState.blend = Laya.RenderState.BLEND_DISABLE;
+        }
+        get downSampleNum() {
+            return this._downSampleNum;
+        }
+        set downSampleNum(value) {
+            this._downSampleNum = Math.min(6, Math.max(value, 0.0));
+        }
+        get blurSpreadSize() {
+            return this._blurSpreadSize;
+        }
+        set blurSpreadSize(value) {
+            this._blurSpreadSize = Math.min(10, Math.max(value, 1.0));
+        }
+        get blurIterations() {
+            return this._blurIterations;
+        }
+        set blurIterations(value) {
+            this._blurIterations = Math.min(Math.max(value, 0.0), 6.0);
+        }
+        render(context) {
+            var cmd = context.command;
+            var viewport = context.camera.viewport;
+            var scaleFactor = 1.0 / (1 << Math.floor(this._downSampleNum));
+            var tw = Math.floor(viewport.width * scaleFactor);
+            var th = Math.floor(viewport.height * scaleFactor);
+            this._texSize.setValue(1.0 / tw, 1.0 / th, tw, th);
+            this._shaderData.setNumber(BlurEffect.SHADERVALUE_DOWNSAMPLEVALUE, this.blurSpreadSize);
+            this._shaderData.setVector(BlurEffect.SHADERVALUE_TEXELSIZE, this._texSize);
+            var downSampleTexture = Laya.RenderTexture.createFromPool(tw, th, Laya.RenderTextureFormat.R8G8B8, Laya.RenderTextureDepthFormat.DEPTHSTENCIL_NONE);
+            downSampleTexture.filterMode = Laya.FilterMode.Bilinear;
+            this._tempRenderTexture[0] = downSampleTexture;
+            var lastDownTexture = context.source;
+            cmd.blitScreenTriangle(lastDownTexture, downSampleTexture, null, this._shader, this._shaderData, 0);
+            lastDownTexture = downSampleTexture;
+            for (var i = 0; i < this._blurIterations; i++) {
+                var blurTexture = Laya.RenderTexture.createFromPool(tw, th, Laya.RenderTextureFormat.R8G8B8, Laya.RenderTextureDepthFormat.DEPTHSTENCIL_NONE);
+                blurTexture.filterMode = Laya.FilterMode.Bilinear;
+                cmd.blitScreenTriangle(lastDownTexture, blurTexture, null, this._shader, this._shaderData, 1);
+                lastDownTexture = blurTexture;
+                this._tempRenderTexture[i * 2 + 1] = blurTexture;
+                blurTexture = Laya.RenderTexture.createFromPool(tw, th, Laya.RenderTextureFormat.R8G8B8, Laya.RenderTextureDepthFormat.DEPTHSTENCIL_NONE);
+                blurTexture.filterMode = Laya.FilterMode.Bilinear;
+                cmd.blitScreenTriangle(lastDownTexture, blurTexture, null, this._shader, this._shaderData, 2);
+                lastDownTexture = blurTexture;
+                this._tempRenderTexture[i * 2 + 2] = blurTexture;
+            }
+            context.source = lastDownTexture;
+            var maxTexture = this._blurIterations * 2 + 1;
+            for (i = 0; i < maxTexture; i++) {
+                Laya.RenderTexture.recoverToPool(this._tempRenderTexture[i]);
+            }
+            context.deferredReleaseTextures.push(lastDownTexture);
+        }
+    }
+    BlurEffect.BLUR_TYPE_GaussianBlur = 0;
+    BlurEffect.BLUR_TYPE_Simple = 1;
+    BlurEffect.SHADERVALUE_MAINTEX = Laya.Shader3D.propertyNameToID("u_MainTex");
+    BlurEffect.SHADERVALUE_TEXELSIZE = Laya.Shader3D.propertyNameToID("u_MainTex_TexelSize");
+    BlurEffect.SHADERVALUE_DOWNSAMPLEVALUE = Laya.Shader3D.propertyNameToID("u_DownSampleValue");
+    class BlurMaterial extends Laya.Material {
+        constructor(texelSize, offset) {
+            super();
+            this.texelSize = new Laya.Vector4();
+            this.doSamplevalue = 0;
+            this.setShaderName("blurEffect");
+            this._shaderValues.setNumber(BlurMaterial.SHADERVALUE_DOWNSAMPLEVALUE, offset);
+            this._shaderValues.setVector(BlurMaterial.SHADERVALUE_TEXELSIZE, texelSize);
+        }
+        sourceTexture(sourceTexture0, sourceTexture1) {
+            this._shaderValues.setTexture(BlurMaterial.SHADERVALUE_SOURCETEXTURE0, sourceTexture0);
+            this._shaderValues.setTexture(BlurMaterial.ShADERVALUE_SOURCETEXTURE1, sourceTexture1);
+        }
+    }
+    BlurMaterial.SHADERVALUE_MAINTEX = Laya.Shader3D.propertyNameToID("u_MainTex");
+    BlurMaterial.SHADERVALUE_TEXELSIZE = Laya.Shader3D.propertyNameToID("u_MainTex_TexelSize");
+    BlurMaterial.SHADERVALUE_DOWNSAMPLEVALUE = Laya.Shader3D.propertyNameToID("u_DownSampleValue");
+    BlurMaterial.SHADERVALUE_SOURCETEXTURE0 = Laya.Shader3D.propertyNameToID("u_sourceTexture0");
+    BlurMaterial.ShADERVALUE_SOURCETEXTURE1 = Laya.Shader3D.propertyNameToID("u_sourceTexture1");
+
+    class CommandBuffer_Outline {
+        constructor() {
+            this.cameraEventFlag = Laya.CameraEventFlags.BeforeImageEffect;
+            this.renders = [];
+            this.materials = [];
+            this.viewPort = null;
+            this.isUseOuline = true;
+            this.renderTexture = null;
+            this.subRendertexture = null;
+            this.downRenderTexture = null;
+            this.blurTexture = null;
+            this.buf = null;
+        }
+        static GetInstance() {
+            if (this.instance == null)
+                this.instance = new CommandBuffer_Outline();
+            return this.instance;
+        }
+        init(a) {
+            if (this.camera == null) {
+                BlurEffect.init();
+                this.camera = a;
+                this.viewPort = this.camera.viewport;
+            }
+        }
+        createDrawMeshCommandBuffer(camera, renders, materials) {
+            if (this.renders.length == 0 || this.materials.length == 0)
+                return;
+            this.buf = new Laya.CommandBuffer();
+            camera.enableBuiltInRenderTexture = true;
+            this.renderTexture = Laya.RenderTexture.createFromPool(this.viewPort.width, this.viewPort.height, Laya.RenderTextureFormat.R8G8B8A8, Laya.RenderTextureDepthFormat.DEPTHSTENCIL_NONE);
+            this.buf.setRenderTarget(this.renderTexture);
+            this.buf.clearRenderTarget(true, false, new Laya.Vector4(0, 0, 0, 0));
+            for (var i = 0, n = renders.length; i < n; i++) {
+                if (renders == null) {
+                    this.RemoveCommandBuffer_Outline();
+                    return;
+                }
+                this.buf.drawRender(renders[i], materials[i], 0);
+            }
+            this.subRendertexture = Laya.RenderTexture.createFromPool(this.viewPort.width, this.viewPort.height, Laya.RenderTextureFormat.R8G8B8A8, Laya.RenderTextureDepthFormat.DEPTHSTENCIL_NONE);
+            this.buf.blitScreenQuad(this.renderTexture, this.subRendertexture);
+            var downSampleFactor = 2;
+            var downSampleWidth = this.viewPort.width / downSampleFactor;
+            var downSampleheigh = this.viewPort.height / downSampleFactor;
+            var texSize = new Laya.Vector4(1.0 / this.viewPort.width, 1.0 / this.viewPort.height, this.viewPort.width, downSampleheigh);
+            var blurMaterial = new BlurMaterial(texSize, 1);
+            this.downRenderTexture = Laya.RenderTexture.createFromPool(downSampleWidth, downSampleheigh, Laya.RenderTextureFormat.R8G8B8, Laya.RenderTextureDepthFormat.DEPTHSTENCIL_NONE);
+            this.buf.blitScreenQuadByMaterial(this.renderTexture, this.downRenderTexture, null, blurMaterial, 0);
+            this.blurTexture = Laya.RenderTexture.createFromPool(downSampleWidth, downSampleheigh, Laya.RenderTextureFormat.R8G8B8, Laya.RenderTextureDepthFormat.DEPTHSTENCIL_NONE);
+            this.blurTexture.filterMode = Laya.FilterMode.Bilinear;
+            this.buf.blitScreenQuadByMaterial(this.downRenderTexture, this.blurTexture, null, blurMaterial, 1);
+            this.buf.blitScreenQuadByMaterial(this.blurTexture, this.downRenderTexture, null, blurMaterial, 2);
+            this.buf.blitScreenQuadByMaterial(this.downRenderTexture, this.blurTexture, null, blurMaterial, 1);
+            this.buf.blitScreenQuadByMaterial(this.blurTexture, this.downRenderTexture, null, blurMaterial, 2);
+            this.buf.setShaderDataTexture(blurMaterial._shaderValues, BlurMaterial.SHADERVALUE_SOURCETEXTURE0, this.downRenderTexture);
+            this.buf.setShaderDataTexture(blurMaterial._shaderValues, BlurMaterial.ShADERVALUE_SOURCETEXTURE1, this.subRendertexture);
+            this.buf.blitScreenQuadByMaterial(this.blurTexture, this.renderTexture, null, blurMaterial, 3);
+            this.buf.setShaderDataTexture(blurMaterial._shaderValues, BlurMaterial.SHADERVALUE_SOURCETEXTURE0, this.renderTexture);
+            this.buf.blitScreenQuadByMaterial(null, this.subRendertexture, null, blurMaterial, 4);
+            this.buf.blitScreenQuadByMaterial(this.subRendertexture, null);
+            return this.buf;
+        }
+        AddCommandBuffet_Outline(sprite3D) {
+            if (sprite3D == null || !this.isUseOuline) {
+                return;
+            }
+            if (sprite3D.meshRenderer == null) {
+                this.renders.push(sprite3D.skinnedMeshRenderer);
+            }
+            else {
+                this.renders.push(sprite3D.meshRenderer);
+            }
+            var unlitMaterial = new Laya.UnlitMaterial();
+            unlitMaterial.albedoColor = new Laya.Vector4(255, 0, 0, 255);
+            this.materials.push(unlitMaterial);
+            this.commandBuffer = this.createDrawMeshCommandBuffer(this.camera, this.renders, this.materials);
+            this.camera.addCommandBuffer(this.cameraEventFlag, this.commandBuffer);
+        }
+        RemoveCommandBuffer_Outline() {
+            if (this.renders.length == 0 || !this.isUseOuline)
+                return;
+            this.renders = [];
+            this.materials = [];
+            this.camera.removeCommandBuffer(this.cameraEventFlag, this.commandBuffer);
+            this.buf = null;
+            if (this.renderTexture != null)
+                Laya.RenderTexture.recoverToPool(this.renderTexture);
+            if (this.blurTexture != null)
+                Laya.RenderTexture.recoverToPool(this.blurTexture);
+            if (this.subRendertexture != null)
+                Laya.RenderTexture.recoverToPool(this.subRendertexture);
+            if (this.downRenderTexture != null)
+                Laya.RenderTexture.recoverToPool(this.downRenderTexture);
+        }
+    }
+
     class Main {
         constructor() {
             this._dirForward = new Laya.Vector3();
@@ -499,12 +739,12 @@ var laya = (function () {
             this._outHitResult = new Laya.HitResult();
             this.outs = new Array();
             this._tempVector3 = new Laya.Vector3();
+            this.ZERO = new Laya.Vector3(0, 0, 0);
+            this.ONE = new Laya.Vector3(0, 0, 0);
+            this.tmpVector = new Laya.Vector3(0, 0, 0);
             Config.useRetinalCanvas = true;
             Config.isAntialias = true;
             Config.isAlpha = true;
-            let config3d = new Config3D();
-            config3d.lightClusterCount = new Laya.Vector3(100, 100, 100);
-            console.log(config3d);
             if (window["Laya3D"])
                 Laya3D.init(GameConfig.width, GameConfig.height);
             else
@@ -549,19 +789,27 @@ var laya = (function () {
         }
         on3DComplete() {
             this.scene = Laya.stage.addChild(Laya.Loader.getRes("res/LayaScene_changjing/Conventional/changjing.ls"));
-            console.log(this.scene);
-            console.log(this.scene);
             this.camera = this.scene.getChildByName("Main Camera");
+            this.miao = new CommandBuffer_Outline();
+            this.miao.init(this.camera);
             this.camera.enableHDR = false;
             this.camera.addComponent(CameraControlScript);
             this.camera.addComponent(triggerScript);
             this.scene.addChild(this.camera);
             this.scene.physicsSimulation.continuousCollisionDetection = true;
+            let aaa = this.scene.getChildByName('zhanguan');
+            let bb = aaa.getChildByName('dianshi');
             ConstEvent.video = new Video();
             Main.rocker = new JoyStick(Laya.stage);
             Laya.stage.addChild(Main.rocker);
             Main.rocker.x = 25;
             Main.rocker.y = Laya.stage.height - 120;
+            this.addButton(Laya.stage.width - 140, Laya.stage.height - 50, 38, 12, "平面展台", function (e) {
+                e.stopPropagation();
+                window.location.href = 'http://www.baidu.com';
+            }, function (e) {
+                e.stopPropagation();
+            });
             var kefuMat = new Laya.UnlitMaterial();
             kefuMat.albedoTexture = Laya.Loader.getRes("res/atlas/kefu2d.png");
             kefuMat.albedoIntensity = 1;
@@ -604,17 +852,56 @@ var laya = (function () {
             this.posX = this.point.x = Laya.MouseManager.instance.mouseX;
             this.posY = this.point.y = Laya.MouseManager.instance.mouseY;
             this.camera.viewportPointToRay(this.point, this._ray);
-            this.scene.physicsSimulation.rayCastAll(this._ray, this.outs);
-            if (this.outs.length !== 0) {
-                this.outs.forEach((item, index) => {
-                    if (item.collider.owner.name == 'videoBtn' && !ConstEvent.isClickVideoBtn) {
-                        ConstEvent.video = new Video();
-                        Laya.stage.addChild(ConstEvent.video);
-                        let url = 'https://2dhall-video.ciftis.org/trans-video/20200813/08b05b19efc64b498ca7124746505234.mp4';
-                        ConstEvent.video.createVideo(url);
-                        ConstEvent.isClickVideoBtn = true;
-                    }
-                });
+            this.scene.physicsSimulation.rayCast(this._ray, this._outHitResult);
+            this.miao.RemoveCommandBuffer_Outline();
+            if (this._outHitResult.succeeded) {
+                if (this._outHitResult.collider.owner.name == 'videoBtn' && !ConstEvent.isClickVideoBtn) {
+                    ConstEvent.video = new Video();
+                    Laya.stage.addChild(ConstEvent.video);
+                    let url = 'https://2dhall-video.ciftis.org/trans-video/20200813/08b05b19efc64b498ca7124746505234.mp4';
+                    ConstEvent.video.createVideo(url);
+                    ConstEvent.isClickVideoBtn = true;
+                }
+                else {
+                    this.miao.AddCommandBuffet_Outline(this._outHitResult.collider.owner);
+                    var collider = this._outHitResult.collider;
+                    this.hasSelectedSprite = collider.owner;
+                    let tmpPos = this.hasSelectedSprite.transform.position;
+                    this.tmpVector.setValue(tmpPos.x, tmpPos.y, tmpPos.z);
+                    this.hasSelectedRigidBody = collider;
+                    collider.angularFactor = this.ZERO;
+                    collider.angularVelocity = this.ZERO;
+                    collider.linearFactor = this.ZERO;
+                    collider.linearVelocity = this.ZERO;
+                }
+                Laya.stage.on(Laya.Event.MOUSE_MOVE, this, this.onMouseMove);
+                console.log(this._outHitResult.collider);
+            }
+        }
+        onMouseMove() {
+            this.delX = Laya.MouseManager.instance.mouseX - this.posX;
+            this.delY = Laya.MouseManager.instance.mouseY - this.posY;
+            if (this.hasSelectedSprite) {
+                this.tmpVector.setValue(this.delX / 4, 0, this.delY / 4);
+                this.hasSelectedRigidBody.linearVelocity = this.tmpVector;
+            }
+            this.posX = Laya.MouseManager.instance.mouseX;
+            this.posY = Laya.MouseManager.instance.mouseY;
+        }
+        onMouseUp() {
+            Laya.stage.off(Laya.Event.MOUSE_MOVE, this, this.onMouseMove);
+            if (this.hasSelectedSprite) {
+                this.hasSelectedRigidBody.angularFactor = this.ONE;
+                this.hasSelectedRigidBody.linearFactor = this.ONE;
+                this.hasSelectedSprite = null;
+            }
+        }
+        onMouseOut() {
+            Laya.stage.off(Laya.Event.MOUSE_MOVE, this, this.onMouseMove);
+            if (this.hasSelectedSprite) {
+                this.hasSelectedRigidBody.angularFactor = this.ONE;
+                this.hasSelectedRigidBody.linearFactor = this.ONE;
+                this.hasSelectedSprite = null;
             }
         }
         moveForward(distance) {
@@ -628,11 +915,11 @@ var laya = (function () {
             this.camera.transform.translate(this._tempVector3);
         }
         addButton(x, y, width, height, text, clikFun, stopClick) {
-            Laya.loader.load(["res/threeDimen/ui/button.png"], Laya.Handler.create(this, function () {
-                this.changeActionButton = Laya.stage.addChild(new Laya.Button("res/threeDimen/ui/button.png", text));
+            Laya.loader.load(["res/atlas/button.png"], Laya.Handler.create(this, function () {
+                this.changeActionButton = Laya.stage.addChild(new Laya.Button("res/atlas/button.png", text));
                 this.changeActionButton.size(width, height);
                 this.changeActionButton.labelBold = true;
-                this.changeActionButton.labelSize = 10;
+                this.changeActionButton.labelSize = 6;
                 this.changeActionButton.sizeGrid = "4,4,4,4";
                 this.changeActionButton.scale(Laya.Browser.pixelRatio, Laya.Browser.pixelRatio);
                 this.changeActionButton.pos(x, y);

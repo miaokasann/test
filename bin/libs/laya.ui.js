@@ -878,16 +878,16 @@
 	                    path: "",
 	                    extraData: "",
 	                    envVersion: "release",
-	                    success: () => {
+	                    success: function success() {
 	                        console.log("-------------跳转成功--------------");
 	                    },
-	                    fail: () => {
+	                    fail: function fail() {
 	                        console.log("-------------跳转失败--------------");
 	                    },
-	                    complete: () => {
+	                    complete: function complete() {
 	                        console.log("-------------跳转接口调用成功--------------");
 	                        this.updateAdvsInfo();
-	                    }
+	                    }.bind(this)
 	                });
 	            }
 	        }

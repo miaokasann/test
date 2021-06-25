@@ -12,7 +12,6 @@ window.Laya= (function (exports) {
     Config.webGL2D_MeshAllocMaxMem = true;
     Config.is2DPixelArtGame = false;
     Config.useWebGL2 = false;
-    Config.printWebglOrder = false;
     Config.allowGPUInstanceDynamicBatch = true;
     Config.useRetinalCanvas = false;
     window.Config = Config;
@@ -837,9 +836,6 @@ window.Laya= (function (exports) {
             var maxTexturenum = gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS);
             WebGLContext._activeTextures = new Array(maxTexturenum);
             WebGLContext._glTextureIDs = [gl.TEXTURE0, gl.TEXTURE1, gl.TEXTURE2, gl.TEXTURE3, gl.TEXTURE4, gl.TEXTURE5, gl.TEXTURE6, gl.TEXTURE7, gl.TEXTURE8, gl.TEXTURE9, gl.TEXTURE10, gl.TEXTURE11, gl.TEXTURE12, gl.TEXTURE13, gl.TEXTURE14, gl.TEXTURE15, gl.TEXTURE16, gl.TEXTURE17, gl.TEXTURE18, gl.TEXTURE19, gl.TEXTURE20, gl.TEXTURE21, gl.TEXTURE22, gl.TEXTURE23, gl.TEXTURE24, gl.TEXTURE25, gl.TEXTURE26, gl.TEXTURE27, gl.TEXTURE28, gl.TEXTURE29, gl.TEXTURE30, gl.TEXTURE31];
-            var maxVertexUniform = gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS);
-            var maxFragUniform = gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS);
-            WebGLContext._maxUniformFragmentVectors = Math.min(maxVertexUniform, maxFragUniform);
         }
         static useProgram(gl, program) {
             if (WebGLContext._useProgram === program)
@@ -964,9 +960,6 @@ window.Laya= (function (exports) {
         }
         static bindVertexArrayForNative(gl, vertexArray) {
             gl.bindVertexArray(vertexArray);
-        }
-        static getUniformMaxVector() {
-            return WebGLContext._maxUniformFragmentVectors;
         }
     }
     WebGLContext._activeTextures = new Array(1);
@@ -6628,6 +6621,7 @@ window.Laya= (function (exports) {
         getRenderType() {
             return SubmitBase.TYPE_CANVAS;
         }
+        ;
     }
     SubmitCanvas.POOL = [];
     {
@@ -7589,7 +7583,7 @@ window.Laya= (function (exports) {
                     onok && onok();
                 }
                 else {
-                    ILaya.loader.load(url, Handler.create(this, (bit) => {
+                    ILaya.loader.load(url, Handler.create(this, function (bit) {
                         this.bitmap = bit;
                         onok && onok();
                     }), null, "htmlimage", 1, true);
@@ -7780,7 +7774,7 @@ window.Laya= (function (exports) {
             var maxTouchPoints = win.navigator.maxTouchPoints || 0;
             var platform = win.navigator.platform;
             if ("my" in Browser.window) {
-                if (u.indexOf('TB/') > -1 || u.indexOf('Taobao/') > -1 || u.indexOf('TM/') > -1) {
+                if ("tb" in Browser.window.my) {
                     window.tbMiniGame(Laya, Laya);
                     if (!Laya["TBMiniAdapter"]) {
                         console.error("请先添加淘宝适配库,详细教程：https://ldc2.layabox.com/doc/?language=zh&nav=zh-ts-5-6-0");
@@ -7907,7 +7901,7 @@ window.Laya= (function (exports) {
                 meta.name = 'viewport', meta.content = content;
                 doc.getElementsByTagName('head')[0].appendChild(meta);
             }
-            Browser.onMobile = window.conch ? true : u.indexOf("Mobile") > -1;
+            Browser.onMobile = window.isConchApp ? true : u.indexOf("Mobile") > -1;
             Browser.onIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
             Browser.onIPhone = u.indexOf("iPhone") > -1;
             Browser.onMac = u.indexOf("Mac OS X") > -1;
@@ -7922,7 +7916,7 @@ window.Laya= (function (exports) {
             Browser.onPC = !Browser.onMobile;
             Browser.onMiniGame = u.indexOf('MiniGame') > -1;
             Browser.onBDMiniGame = u.indexOf('SwanGame') > -1;
-            Browser.onLayaRuntime = !!window.conch;
+            Browser.onLayaRuntime = !!Browser.window.conch;
             if (u.indexOf('OPPO') > -1 && u.indexOf('MiniGame') > -1) {
                 Browser.onQGMiniGame = true;
                 Browser.onMiniGame = false;
@@ -7950,9 +7944,6 @@ window.Laya= (function (exports) {
                 Browser.onTBMiniGame = true;
             }
             return win;
-        }
-        static get _isMiniGame() {
-            return Browser.onMiniGame || Browser.onBDMiniGame || Browser.onQGMiniGame || Browser.onKGMiniGame || Browser.onVVMiniGame || Browser.onAlipayMiniGame || Browser.onQQMiniGame || Browser.onBLMiniGame || Browser.onTTMiniGame || Browser.onHWMiniGame || Browser.onTBMiniGame;
         }
         static createElement(type) {
             Browser.__init__();
@@ -8021,7 +8012,7 @@ window.Laya= (function (exports) {
     Browser._pixelRatio = -1;
     Browser.mainCanvas = null;
     Browser.hanzi = new RegExp("^[\u4E00-\u9FA5]$");
-    Browser.fontMap = {};
+    Browser.fontMap = [];
     Browser.measureText = function (txt, font) {
         var isChinese = Browser.hanzi.test(txt);
         if (isChinese && Browser.fontMap[font]) {
@@ -8249,6 +8240,8 @@ window.Laya= (function (exports) {
             this.fontSizeInfo = {};
             this.mapFont = {};
             this.fontID = 0;
+            this.mapColor = [];
+            this.colorID = 0;
             this.fontScaleX = 1.0;
             this.fontScaleY = 1.0;
             this._curStrPos = 0;
@@ -8440,7 +8433,7 @@ window.Laya= (function (exports) {
                         else {
                             var add = sameTexData[ri.tex.id];
                             if (!add) {
-                                var o1 = { texgen: ri.tex.genID, tex: ri.tex, words: new Array() };
+                                var o1 = { texgen: ri.tex.genID, tex: ri.tex, words: [] };
                                 sameTexData[ri.tex.id] = o1;
                                 add = o1.words;
                             }
@@ -8465,6 +8458,7 @@ window.Laya= (function (exports) {
         _drawResortedWords(ctx, startx, starty, samePagesData) {
             var isLastRender = ctx._charSubmitCache ? ctx._charSubmitCache._enable : false;
             var mat = ctx._curMat;
+            var slen = samePagesData.length;
             for (var id in samePagesData) {
                 var dt = samePagesData[id];
                 if (!dt)
@@ -11210,8 +11204,6 @@ window.Laya= (function (exports) {
                 return null;
             }
             var gl = LayaGL.instance = WebGLContext.mainContext = getWebGLContext(Render._mainCanvas.source);
-            if (Config.printWebglOrder)
-                this._replaceWebglcall(gl);
             if (!gl)
                 return false;
             LayaGL.instance = gl;
@@ -11229,28 +11221,6 @@ window.Laya= (function (exports) {
             Buffer2D.__int__(gl);
             BlendMode._init_(gl);
             return true;
-        }
-        _replaceWebglcall(gl) {
-            var tempgl = {};
-            for (const key in gl) {
-                if (typeof gl[key] == "function" && key != "getError" && key != "__proto__") {
-                    tempgl[key] = gl[key];
-                    gl[key] = function () {
-                        let arr = [];
-                        for (let i = 0; i < arguments.length; i++) {
-                            arr.push(arguments[i]);
-                        }
-                        let result = tempgl[key].apply(gl, arr);
-                        console.log(RenderInfo.loopCount + ":gl." + key + ":" + arr);
-                        let err = gl.getError();
-                        if (err) {
-                            console.log(err);
-                            debugger;
-                        }
-                        return result;
-                    };
-                }
-            }
         }
         _enterFrame(e = null) {
             ILaya.stage._loop();
@@ -15914,7 +15884,7 @@ window.Laya= (function (exports) {
             Input._initInput(Input.input = ILaya.Browser.createElement("input"));
             Input.inputContainer = ILaya.Browser.createElement("div");
             Input.inputContainer.style.position = "absolute";
-            Input.inputContainer.style.zIndex = '1E5';
+            Input.inputContainer.style.zIndex = 1E5;
             ILaya.Browser.container.appendChild(Input.inputContainer);
             Input.inputContainer.setPos = function (x, y) {
                 Input.inputContainer.style.left = x + 'px';
@@ -15928,7 +15898,7 @@ window.Laya= (function (exports) {
             style.backgroundColor = 'transparent';
             style.border = 'none';
             style.outline = 'none';
-            style.zIndex = '1';
+            style.zIndex = 1;
             input.addEventListener('input', Input._processInputting);
             input.addEventListener('mousemove', Input._stopEvent);
             input.addEventListener('mousedown', Input._stopEvent);
@@ -16032,10 +16002,6 @@ window.Laya= (function (exports) {
         _setInputMethod() {
             Input.input.parentElement && (Input.inputContainer.removeChild(Input.input));
             Input.area.parentElement && (Input.inputContainer.removeChild(Input.area));
-            if (ILaya.Browser.onAndroid) {
-                Input.input = Input.inputElement = ILaya.Browser.createElement('input');
-                Input._initInput(Input.input);
-            }
             Input.inputElement = (this._multiline ? Input.area : Input.input);
             Input.inputContainer.appendChild(Input.inputElement);
             if (Text.RightToLeft) {
@@ -16056,6 +16022,7 @@ window.Laya= (function (exports) {
                 input.setForbidEdit(!this._editable);
             }
             input.maxLength = this._maxChars;
+            var padding = this.padding;
             input.value = this._content;
             input.placeholder = this._prompt;
             ILaya.stage.off(Event.KEY_DOWN, this, this._onKeyDown);
@@ -16065,6 +16032,7 @@ window.Laya= (function (exports) {
             if (ILaya.Browser.onPC)
                 input.focus();
             if (!ILaya.Browser.onMiniGame && !ILaya.Browser.onBDMiniGame && !ILaya.Browser.onQGMiniGame && !ILaya.Browser.onKGMiniGame && !ILaya.Browser.onVVMiniGame && !ILaya.Browser.onAlipayMiniGame && !ILaya.Browser.onQQMiniGame && !ILaya.Browser.onBLMiniGame && !ILaya.Browser.onTTMiniGame && !ILaya.Browser.onHWMiniGame && !ILaya.Browser.onTBMiniGame) {
+                var temp = this._text;
                 this._text = null;
             }
             this.typeset();
@@ -18196,9 +18164,7 @@ window.Laya= (function (exports) {
             if (supportWebAudio)
                 WebAudioSound.initWebAudio();
             SoundManager._soundClass = supportWebAudio ? WebAudioSound : AudioSound;
-            if (!Browser.onTBMiniGame) {
-                AudioSound._initMusicAudio();
-            }
+            AudioSound._initMusicAudio();
             SoundManager._musicClass = AudioSound;
             return supportWebAudio;
         }
@@ -18391,7 +18357,7 @@ window.Laya= (function (exports) {
                     return null;
             }
             var tSound;
-            if (!Browser._isMiniGame) {
+            if (!ILaya.Browser.onBDMiniGame && !ILaya.Browser.onMiniGame && !ILaya.Browser.onKGMiniGame && !ILaya.Browser.onQGMiniGame && !ILaya.Browser.onVVMiniGame && !ILaya.Browser.onAlipayMiniGame && !ILaya.Browser.onQQMiniGame && !ILaya.Browser.onBLMiniGame && !ILaya.Browser.onTTMiniGame && !ILaya.Browser.onHWMiniGame && !ILaya.Browser.onTBMiniGame) {
                 tSound = ILaya.loader.getRes(url);
             }
             if (!soundClass)
@@ -18399,7 +18365,7 @@ window.Laya= (function (exports) {
             if (!tSound) {
                 tSound = new soundClass();
                 tSound.load(url);
-                if (!Browser._isMiniGame) {
+                if (!ILaya.Browser.onBDMiniGame && !ILaya.Browser.onMiniGame && !ILaya.Browser.onKGMiniGame && !ILaya.Browser.onQGMiniGame && !ILaya.Browser.onVVMiniGame && !ILaya.Browser.onAlipayMiniGame && !ILaya.Browser.onQQMiniGame && !ILaya.Browser.onBLMiniGame && !ILaya.Browser.onTTMiniGame && !ILaya.Browser.onHWMiniGame && !ILaya.Browser.onTBMiniGame) {
                     ILaya.Loader.cacheRes(url, tSound);
                 }
             }
@@ -21215,9 +21181,7 @@ window.Laya= (function (exports) {
         has(key) {
             if (key == null)
                 return false;
-            if (WeakObject.supportWeakMap) {
-                return false;
-            }
+            if (WeakObject.supportWeakMap) ;
             else {
                 if (typeof (key) == 'string' || typeof (key) == 'number')
                     return this._obj[key] != null;
@@ -21456,7 +21420,7 @@ window.Laya= (function (exports) {
         }
         static create() {
             var tool = Pool.getItemByClass("InitTool", InitTool);
-            tool._idMap = {};
+            tool._idMap = [];
             return tool;
         }
         addLoadRes(url, type = null) {
@@ -21578,7 +21542,7 @@ window.Laya= (function (exports) {
             this._view = [];
         }
         show(x = 0, y = 0) {
-            if (!Browser._isMiniGame && !ILaya.Render.isConchApp)
+            if (!Browser.onMiniGame && !ILaya.Render.isConchApp && !Browser.onBDMiniGame && !Browser.onKGMiniGame && !Browser.onQGMiniGame && !Browser.onQQMiniGame && !Browser.onAlipayMiniGame && !Browser.onBLMiniGame && !Browser.onTTMiniGame && !Browser.onHWMiniGame && !Browser.onTBMiniGame)
                 this._useCanvas = true;
             this._show = true;
             Stat._fpsData.length = 60;
@@ -22166,7 +22130,7 @@ window.Laya= (function (exports) {
             var attributes = [];
             var uniforms = [];
             var definesInfo = {};
-            var definesName = {};
+            var definesName = [];
             result.attributes = attributes;
             result.uniforms = uniforms;
             result.defines = definesInfo;
@@ -22203,7 +22167,7 @@ window.Laya= (function (exports) {
                                     }
                                     continue;
                                 }
-                                i = ShaderCompile._parseOne(attributes, uniforms, words, i, word, !!definesName[tempelse]);
+                                i = ShaderCompile._parseOne(attributes, uniforms, words, i, word, definesName[tempelse]);
                             }
                         }
                         continue;
@@ -22769,7 +22733,7 @@ window.Laya= (function (exports) {
     Laya.lateTimer = null;
     Laya.timer = null;
     Laya.loader = null;
-    Laya.version = "2.11.0beta1";
+    Laya.version = "2.10.0";
     Laya._isinit = false;
     Laya.isWXOpenDataContext = false;
     Laya.isWXPosMsg = false;

@@ -703,7 +703,7 @@
 	}
 
 	class CannonPhysicsSimulation {
-	    constructor(configuration) {
+	    constructor(configuration, flags = 0) {
 	        this._gravity = new Laya.Vector3(0, -10, 0);
 	        this._btClosestRayResultCallback = new CANNON.RaycastResult();
 	        this._btRayoption = {};
@@ -722,13 +722,18 @@
 	        this._btDiscreteDynamicsWorld.defaultContactMaterial.contactEquationRelaxation = configuration.contactEquationRelaxation;
 	        this._btDiscreteDynamicsWorld.defaultContactMaterial.contactEquationStiffness = configuration.contactEquationStiffness;
 	        this.gravity = this._gravity;
-	        CannonPhysicsSimulation._cannonPhysicsSimulation = this;
 	    }
 	    static __init__() {
 	        CannonPhysicsSimulation._btTempVector30 = new CANNON.Vec3(0, 0, 0);
 	        CannonPhysicsSimulation._btTempVector31 = new CANNON.Vec3(0, 0, 0);
 	    }
 	    static createConstraint() {
+	    }
+	    get continuousCollisionDetection() {
+	        return false;
+	    }
+	    set continuousCollisionDetection(value) {
+	        throw "Simulation:Cannon physical engine does not support this feature";
 	    }
 	    get gravity() {
 	        if (!this._btDiscreteDynamicsWorld)
@@ -751,6 +756,11 @@
 	            throw "Simulation:Cannot perform this action when the physics engine is set to CollisionsOnly";
 	        this._btDiscreteDynamicsWorld.solver.iterations = value;
 	        this._iterations = value;
+	    }
+	    get speculativeContactRestitution() {
+	        return false;
+	    }
+	    set speculativeContactRestitution(value) {
 	    }
 	    _simulate(deltaTime) {
 	        this._updatedRigidbodies = 0;
@@ -829,7 +839,7 @@
 	        rayOptions.collisionFilterGroup = collisonGroup;
 	        out.length = 0;
 	        this._btDiscreteDynamicsWorld.raycastAll(rayFrom, rayTo, rayOptions, function (result) {
-	            var hitResult = CannonPhysicsSimulation._cannonPhysicsSimulation._collisionsUtils.getHitResult();
+	            var hitResult = this._collisionsUtils.getHitResult();
 	            out.push(hitResult);
 	            hitResult.succeeded = true;
 	            hitResult.collider = CannonPhysicsComponent._physicObjectsMap[result.body.layaID];

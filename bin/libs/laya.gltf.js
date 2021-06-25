@@ -1146,8 +1146,8 @@
 	    static _getglTFInnerUrls(glTFData, bufferUrls, textureUrls, subUrls, urlVersion, glTFBasePath) {
 	        if (glTFData.buffers) {
 	            glTFData.buffers.forEach(buffer => {
-	                if (glTFBase64Tool.isBase64String(buffer.uri)) {
-	                    let bin = glTFBase64Tool.decode(buffer.uri.replace(glTFBase64Tool.reghead, ""));
+	                if (Laya.glTFBase64Tool.isBase64String(buffer.uri)) {
+	                    let bin = Laya.glTFBase64Tool.decode(buffer.uri.replace(Laya.glTFBase64Tool.reghead, ""));
 	                    Laya.Loader.cacheRes(buffer.uri, bin);
 	                }
 	                else {
@@ -1162,7 +1162,7 @@
 	                let constructParams = glTFUtils.getTextureConstructParams(glTFImage, glTFSampler);
 	                let propertyParams = glTFUtils.getTexturePropertyParams(glTFSampler);
 	                if (glTFImage.bufferView) ;
-	                else if (glTFBase64Tool.isBase64String(glTFImage.uri)) {
+	                else if (Laya.glTFBase64Tool.isBase64String(glTFImage.uri)) {
 	                    glTFImage.uri = glTFLoader._addglTFInnerUrls(textureUrls, subUrls, urlVersion, "", glTFImage.uri, glTFLoader.GLTFBASE64TEX, constructParams, propertyParams);
 	                }
 	                else {

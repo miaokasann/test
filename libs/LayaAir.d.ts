@@ -50,11 +50,6 @@
 		static useWebGL2:boolean;
 
 		/**
-		 * 是否打印Webgl指令，同时定位webgl报错
-		 */
-		static printWebglOrder:boolean;
-
-		/**
 		 * 是否允许GPUInstance动态合并,仅对3D有效。
 		 */
 		static allowGPUInstanceDynamicBatch:boolean;
@@ -2395,7 +2390,7 @@ declare module Laya {
 		 * @param layerIndex 层索引。
 		 * @param normalizedTime 归一化的播放起始时间。
 		 */
-		play(name?:string|null,layerIndex?:number,normalizedTime?:number):void;
+		play(name?:string,layerIndex?:number,normalizedTime?:number):void;
 
 		/**
 		 * 在当前动画状态和目标动画状态之间进行融合过渡播放。
@@ -2513,7 +2508,7 @@ declare module Laya {
 		 * 获取动画状态。
 		 * @return 动画状态。
 		 */
-		getAnimatorState(name:string):AnimatorState|null;
+		getAnimatorState(name:string):AnimatorState;
 
 		/**
 		 * 添加动画状态。
@@ -2602,8 +2597,8 @@ declare module Laya {
 		/**
 		 * 动作。
 		 */
-		get clip():AnimationClip|null;
-		set clip(value:AnimationClip|null);
+		get clip():AnimationClip;
+		set clip(value:AnimationClip);
 
 		/**
 		 * 创建一个 <code>AnimatorState</code> 实例。
@@ -2643,14 +2638,14 @@ declare module Laya {
 		 * @param type 组件类型。
 		 * @return 脚本。
 		 */
-		getScript(type:typeof AnimatorStateScript):AnimatorStateScript|null;
+		getScript(type:typeof AnimatorStateScript):AnimatorStateScript;
 
 		/**
 		 * 获取脚本集合。
 		 * @param type 组件类型。
 		 * @return 脚本集合。
 		 */
-		getScripts(type:typeof AnimatorStateScript):AnimatorStateScript[]|null;
+		getScripts(type:typeof AnimatorStateScript):AnimatorStateScript[];
 
 		/**
 		 * 克隆。
@@ -3996,7 +3991,6 @@ enum ShadowMode {
 		private _albedoIntensity:any;
 		private _enableLighting:any;
 		private _enableVertexColor:any;
-		private _enableTransmission:any;
 		set _ColorR(value:number);
 		set _ColorG(value:number);
 		set _ColorB(value:number);
@@ -4147,42 +4141,6 @@ enum ShadowMode {
 		 */
 		get specularTexture():BaseTexture;
 		set specularTexture(value:BaseTexture);
-
-		/**
-		 * 是否支持顶点色。
-		 */
-		get enableTransmission():boolean;
-		set enableTransmission(value:boolean);
-
-		/**
-		 * 透光率，会影响漫反射以及透光强度
-		 */
-		get transmissionRate():number;
-		set transmissionRata(value:number);
-
-		/**
-		 * 透射影响范围指数
-		 */
-		get backDiffuse():number;
-		set backDiffuse(value:number);
-
-		/**
-		 * 透射光强度
-		 */
-		get backScale():number;
-		set backScale(value:number);
-
-		/**
-		 * 厚度贴图，会影响透视光，越厚，透射光越弱
-		 */
-		get thinknessTexture():BaseTexture;
-		set thinknessTexture(value:BaseTexture);
-
-		/**
-		 * 透光颜色。模拟透光物质内部颜色吸收率
-		 */
-		get transmissionColor():Vector4;
-		set transmissionColor(value:Vector4);
 
 		/**
 		 * 创建一个 <code>BlinnPhongMaterial</code> 实例。
@@ -4466,7 +4424,7 @@ enum ShadowMode {
 		/**
 		 * @private 
 		 */
-		_shaderValues:ShaderData|null;
+		_shaderValues:ShaderData;
 
 		/**
 		 * 所属渲染队列.
@@ -4674,6 +4632,12 @@ enum PBRRenderMode {
 		set renderMode(value:number);
 
 		constructor();
+
+		/**
+		 * @deprecated 
+		 */
+		get enableReflection():boolean;
+		set enableReflection(value:boolean);
 	}
 
 enum PBRRenderQuality {
@@ -5219,6 +5183,7 @@ enum PBRMetallicSmoothnessSource {
 		 */
 		static RENDERMODE_ADDTIVE:number;
 		static SHADERDEFINE_ALBEDOTEXTURE:ShaderDefine;
+		static SHADERDEFINE_TILINGOFFSET:ShaderDefine;
 		static SHADERDEFINE_ENABLEVERTEXCOLOR:ShaderDefine;
 		static ALBEDOTEXTURE:number;
 		static ALBEDOCOLOR:number;
@@ -7882,7 +7847,7 @@ enum ParticleSystemShapeType {
 		/**
 		 * @inheritDoc 
 		 */
-		_changeRenderObjects(index:number,material:Material):void;
+		_changeRenderObjects(sender:PixelLineRenderer,index:number,material:Material):void;
 
 		/**
 		 * 增加一条线。
@@ -8438,113 +8403,113 @@ enum ReflectionProbeMode {
 
 		/**
 		 * 设置shader图片数据
-		 * @param shaderData shader数据集合
-		 * @param nameID 图片UniformID
-		 * @param source 图片源
+		 * @param shaderData 
+		 * @param nameID 
+		 * @param source 
 		 */
 		setShaderDataTexture(shaderData:ShaderData,nameID:number,source:BaseTexture):void;
 
 		/**
 		 * 设置全局纹理数据
-		 * @param nameID 图片uniformID
-		 * @param source 图片源
+		 * @param nameID 
+		 * @param source 
 		 */
 		setGlobalTexture(nameID:number,source:BaseTexture):void;
 
 		/**
 		 * 设置shader Vector4数据
-		 * @param shaderData shader数据集合
-		 * @param nameID 数据ID
-		 * @param value 数据
+		 * @param shaderData 
+		 * @param nameID 
+		 * @param value 
 		 */
 		setShaderDataVector(shaderData:ShaderData,nameID:number,value:Vector4):void;
 
 		/**
 		 * 设置全局Vector4数据
-		 * @param nameID Vector4数据ID
-		 * @param source 数据
+		 * @param nameID 
+		 * @param source 
 		 */
 		setGlobalVector(nameID:number,source:Vector4):void;
 
 		/**
 		 * 设置shader Vector3数据
-		 * @param shaderData shader数据集合
-		 * @param nameID 数据ID
-		 * @param value 数据
+		 * @param shaderData 
+		 * @param nameID 
+		 * @param value 
 		 */
 		setShaderDataVector3(shaderData:ShaderData,nameID:number,value:Vector3):void;
 
 		/**
 		 * 设置全局Vector3数据
-		 * @param nameID 数据ID
-		 * @param source 数据
+		 * @param nameID 
+		 * @param source 
 		 */
 		setGlobalVector3(nameID:number,source:Vector3):void;
 
 		/**
 		 * 设置shader Vector2数据
-		 * @param shaderData shader数据集合
-		 * @param nameID 数据ID
-		 * @param value 数据
+		 * @param shaderData 
+		 * @param nameID 
+		 * @param value 
 		 */
 		setShaderDataVector2(shaderData:ShaderData,nameID:number,value:Vector2):void;
 
 		/**
 		 * 设置全局Vector2数据
-		 * @param nameID 数据ID
-		 * @param source 数据
+		 * @param nameID Uniform标记
+		 * @param source 
 		 */
 		setGlobalVector2(nameID:number,source:Vector2):void;
 
 		/**
 		 * 设置shader Number属性
-		 * @param shaderData shader数据集合
-		 * @param nameID 数据ID
-		 * @param value 数据
+		 * @param shaderData 
+		 * @param nameID 
+		 * @param value 
 		 */
 		setShaderDataNumber(shaderData:ShaderData,nameID:number,value:number):void;
 
 		/**
 		 * 设置全局number属性
-		 * @param nameID 数据ID
-		 * @param source 数据
+		 * @param nameID 
+		 * @param source 
 		 */
 		setGlobalNumber(nameID:number,source:number):void;
 
 		/**
 		 * 设置shader Int属性
-		 * @param shaderData shader数据集合
-		 * @param nameID 数据ID
-		 * @param value 数据
+		 * @param shaderData 
+		 * @param nameID 
+		 * @param value 
 		 */
 		setShaderDataInt(shaderData:ShaderData,nameID:number,value:number):void;
 
 		/**
 		 * 设置全局int属性
-		 * @param nameID 数据ID
-		 * @param source 数据
+		 * @param nameID 
+		 * @param source 
 		 */
 		setGlobalInt(nameID:number,source:number):void;
 
 		/**
 		 * 设置shader Matrix属性
-		 * @param shaderData shader数据集合
-		 * @param nameID 数据ID
-		 * @param value 数据
+		 * @param shaderData 
+		 * @param nameID 
+		 * @param value 
 		 */
 		setShaderDataMatrix(shaderData:ShaderData,nameID:number,value:Matrix4x4):void;
 
 		/**
 		 * 设置全局Matrix属性
-		 * @param nameID 数据ID
-		 * @param source 数据
+		 * @param nameID 
+		 * @param source 
 		 */
 		setGlobalMatrix(nameID:number,source:number):void;
 
 		/**
 		 * 添加一条通过全屏四边形将源纹理渲染到目标渲染纹理指令。
-		 * @param source 源纹理. 如果为null,前渲染结果为原纹理
-		 * @param dest 目标纹理. 如果为null，直接渲染到最终画布
+		 * @param source 源纹理。
+		 * @param dest 目标纹理。
 		 * @param offsetScale 偏移缩放。
 		 * @param shader 着色器,如果为null使用内部拷贝着色器,不做任何处理。
 		 * @param shaderData 着色器数据,如果为null只接收sourceTexture。
@@ -8554,11 +8519,11 @@ enum ReflectionProbeMode {
 
 		/**
 		 * 添加一条通过全屏四边形将源纹理渲染到目标渲染纹理指令。
-		 * @param source 源纹理 如果为null,前渲染结果为原纹理
-		 * @param dest 目标纹理 如果为null，直接渲染到最终画布
-		 * @param offsetScale 偏移缩放
-		 * @param material 材质
-		 * @param subShader shader索引
+		 * @param source 
+		 * @param dest 
+		 * @param offsetScale 
+		 * @param material 
+		 * @param subShader 
 		 */
 		blitScreenQuadByMaterial(source:BaseTexture,dest:RenderTexture,offsetScale?:Vector4,material?:Material,subShader?:number):void;
 
@@ -8575,7 +8540,6 @@ enum ReflectionProbeMode {
 
 		/**
 		 * 设置指令渲染目标
-		 * @param renderTexture RT渲染目标
 		 */
 		setRenderTarget(renderTexture:RenderTexture):void;
 
@@ -8590,148 +8554,21 @@ enum ReflectionProbeMode {
 
 		/**
 		 * 渲染一个Mesh
-		 * @param mesh 原始网格信息
-		 * @param matrix 网格世界矩阵
-		 * @param material 材质
-		 * @param submeshIndex 子网格索引 如果索引为
-		 * @param subShaderIndex 子shader索引 一般为0
+		 * @param mesh 
+		 * @param matrix 
+		 * @param material 
+		 * @param submeshIndex 
+		 * @param shaderPass 
 		 */
 		drawMesh(mesh:Mesh,matrix:Matrix4x4,material:Material,submeshIndex:number,subShaderIndex:number):void;
 
 		/**
 		 * 渲染一个Render
-		 * @param render 渲染器
-		 * @param material 材质
-		 * @param subShaderIndex 子shader索引 一般为0
+		 * @param render 
+		 * @param material 
+		 * @param subShaderIndex 
 		 */
 		drawRender(render:BaseRender,material:Material,subShaderIndex:number):void;
-
-		/**
-		 * 使用instance动态合批的方式渲染一个Mesh
-		 * @param mesh 原始网格信息
-		 * @param subMeshIndex mesh索引
-		 * @param matrixs 渲染的世界矩阵数组，用来描述每个Mesh需要渲染的位置,如果为null，将不创建更新世界矩阵Buffer
-		 * @param material 渲染材质
-		 * @param subShaderIndex 渲染材质shader索引
-		 * @param instanceProperty Instance自定义属性
-		 * @param drawnums 渲染个数
-		 */
-		drawMeshInstance(mesh:Mesh,subMeshIndex:number,matrixs:Matrix4x4[],material:Material,subShaderIndex:number,instanceProperty:MaterialInstancePropertyBlock,drawnums:number):any;
-	}
-
-	/**
-	 * <code>SetShaderDataTextureCMD</code> 类用于创建设置渲染目标指令。
-	 */
-	class DrawMeshInstancedCMD extends Command  {
-
-		/**
-		 * 设置最大DrawInstance数
-		 */
-		static maxInstanceCount:number;
-
-		constructor();
-
-		/**
-		 * @inheritDoc 
-		 * @override 
-		 */
-		run():void;
-
-		/**
-		 * 重置DrawInstance的世界矩阵数组
-		 * @param worldMatrixArray 
-		 */
-		setWorldMatrix(worldMatrixArray:Matrix4x4[]):void;
-
-		/**
-		 * 重置渲染个数
-		 * @param drawNums 
-		 */
-		setDrawNums(drawNums:number):void;
-
-		/**
-		 * @inheritDoc 
-		 * @override 
-		 */
-		recover():void;
-	}
-
-enum InstanceLocation {
-    CUSTOME0 = 12,
-    CUSTOME1 = 13,
-    CUSTOME2 = 14,
-    CUSTOME3 = 15
-}
-
-	/**
-	 * <code>Mesh</code> 类用于创建CustomInstance属性块。
-	 */
-	class MaterialInstancePropertyBlock  {
-
-		/**
-		 * Instance合并方案
-		 */
-
-		/**
-		 * attribute instance渲染方案 优点：合并数量多,合并效率高，渲染性能优 缺点：instance变量元素少
-		 */
-		static INSTANCETYPE_ATTRIBUTE:number;
-
-		/**
-		 * uniform instance渲染方案 优点：instance变量多，灵活  缺点：合并数量受WebGLContext._maxUniformFragmentVectors的影响，合并效率低
-		 */
-		static INSTANCETYPE_UNIFORMBUFFER:number;
-
-		constructor();
-
-		/**
-		 * 创建instance属性
-		 * @param attributeName name
-		 * @param arrays data
-		 * @param vertexStride vertex size
-		 * @param vertexformat vertexFormat
-		 * @param attributeLocation attribute location
-		 */
-		private _creatProperty:any;
-
-		/**
-		 * 设置Vector4材质数组属性
-		 * @param attributeName 属性名称（要对应到Shader中）
-		 * @param arrays 数据
-		 * @param attributeLocation 属性Shader位置（需要与shader中的声明Attribute一一对应）
-		 */
-		setVectorArray(attributeName:string,arrays:Vector4[]|Float32Array,attributeLocation:InstanceLocation):void;
-
-		/**
-		 * 设置Vector3材质数组属性
-		 * @param attributeName 属性名称（要对应到Shader中）
-		 * @param arrays 数据
-		 * @param attributeLocation 属性shader位置（需要与shader中的声明Attribute一一对应）
-		 */
-		setVector3Array(attributeName:string,arrays:Vector3[]|Float32Array,attributeLocation:InstanceLocation):void;
-
-		/**
-		 * 设置Vector2材质数组属性
-		 * @param attributeName 属性名称（要对应到Shader中）
-		 * @param arrays 数据
-		 * @param attributeLocation 属性shader位置（需要与shader中的声明Attribute一一对应）
-		 */
-		setVector2Array(attributeName:string,arrays:Vector2[]|Float32Array,attributeLocation:InstanceLocation):void;
-
-		/**
-		 * 设置Number材质数组属性
-		 * @param attributeName 属性名称（要对应到Shader中）
-		 * @param arrays 数据
-		 * @param attributeLocation 属性shader位置（需要与shader中的声明Attribute一一对应）
-		 */
-		setNumberArray(attributeName:string,arrays:Float32Array,attributeLocation:InstanceLocation):void;
-
-		/**
-		 * 获得属性数据
-		 * @param attributeLocation 属性shader位置
-		 */
-		getPropertyArray(attributeLocation:InstanceLocation):Vector4[]|Vector3[]|Vector2[]|Float32Array;
-		clear():void;
 	}
 
 enum ShaderDataType {
@@ -8777,27 +8614,27 @@ enum ShaderDataType {
 		/**
 		 * 源纹理。
 		 */
-		source:RenderTexture|null;
+		source:RenderTexture;
 
 		/**
 		 * 输出纹理。
 		 */
-		destination:RenderTexture|null;
+		destination:RenderTexture;
 
 		/**
 		 * 渲染相机。
 		 */
-		camera:Camera|null;
+		camera:Camera;
 
 		/**
 		 * 合成着色器数据。
 		 */
-		compositeShaderData:ShaderData|null;
+		compositeShaderData:ShaderData;
 
 		/**
 		 * 后期处理指令流。
 		 */
-		command:CommandBuffer|null;
+		command:CommandBuffer;
 
 		/**
 		 * 临时纹理数组。
@@ -9761,7 +9598,7 @@ enum TrailAlignment {
 		get widthCurve():FloatKeyframe[];
 
 		/**
-		 * 设置宽度曲线。最多10个
+		 * 设置宽度曲线。
 		 * @param value 宽度曲线。
 		 */
 		set widthCurve(value:FloatKeyframe[]);
@@ -9861,6 +9698,7 @@ enum TrailAlignment {
 		 */
 		static defaultMaterial:TrailMaterial;
 		static SHADERDEFINE_MAINTEXTURE:ShaderDefine;
+		static SHADERDEFINE_TILINGOFFSET:ShaderDefine;
 		static SHADERDEFINE_ADDTIVEFOG:ShaderDefine;
 		static MAINTEXTURE:number;
 		static TINTCOLOR:number;
@@ -10564,6 +10402,26 @@ enum IndexFormat {
 		static MESH_WORLDMATRIX_ROW3:number;
 
 		/**
+		 * 顶点MVP矩阵数据Row0
+		 */
+		static MESH_MVPMATRIX_ROW0:number;
+
+		/**
+		 * 顶点MVP矩阵数据Row1
+		 */
+		static MESH_MVPMATRIX_ROW1:number;
+
+		/**
+		 * 顶点MVP矩阵数据Row2
+		 */
+		static MESH_MVPMATRIX_ROW2:number;
+
+		/**
+		 * 顶点MVP矩阵数据Row3
+		 */
+		static MESH_MVPMATRIX_ROW3:number;
+
+		/**
 		 * 简单数据动画数据
 		 */
 		static MESH_SIMPLEANIMATOR:number;
@@ -10574,33 +10432,14 @@ enum IndexFormat {
 		static instanceWorldMatrixDeclaration:VertexDeclaration;
 
 		/**
+		 * instanceMVP顶点描述
+		 */
+		static instanceMVPMatrixDeclaration:VertexDeclaration;
+
+		/**
 		 * instanceSimple动画数据顶点描述
 		 */
 		static instanceSimpleAnimatorDeclaration:VertexDeclaration;
-
-		/**
-		 * 自定义attribute instance 预留位
-		 */
-
-		/**
-		 * 顶点自定义数据0
-		 */
-		static MESH_CUSTOME0:number;
-
-		/**
-		 * 顶点自定义数据1
-		 */
-		static MESH_CUSTOME1:number;
-
-		/**
-		 * 顶点自定义数据2
-		 */
-		static MESH_CUSTOME2:number;
-
-		/**
-		 * 顶点自定义数据3
-		 */
-		static MESH_CUSTOME3:number;
 
 		/**
 		 * 获取顶点声明。
@@ -10628,8 +10467,8 @@ enum IndexFormat {
 		/**
 		 * 获取顶点声明。
 		 */
-		get vertexDeclaration():VertexDeclaration|null;
-		set vertexDeclaration(value:VertexDeclaration|null);
+		get vertexDeclaration():VertexDeclaration;
+		set vertexDeclaration(value:VertexDeclaration);
 
 		/**
 		 * 是否可读。
@@ -10674,7 +10513,7 @@ enum IndexFormat {
 		/**
 		 * @ignore 
 		 */
-		getFloat32Data():Float32Array|null;
+		getFloat32Data():Float32Array;
 
 		/**
 		 * @ignore 
@@ -11969,7 +11808,7 @@ enum IndexFormat {
 		 * @param cameraForward 相机前向量
 		 * @param mat 变换矩阵
 		 */
-		static billboard(objectPosition:Vector3,cameraPosition:Vector3,cameraUp:Vector3,cameraForward:Vector3,mat:Matrix4x4):void;
+		static billboard(objectPosition:Vector3,cameraPosition:Vector3,cameraRight:Vector3,cameraUp:Vector3,cameraForward:Vector3,mat:Matrix4x4):void;
 
 		/**
 		 * 设置矩阵为单位矩阵
@@ -12974,7 +12813,7 @@ enum IndexFormat {
 		 * @param w 四元数的w值
 		 */
 
-		constructor(x?:number,y?:number,z?:number,w?:number);
+		constructor(x?:number,y?:number,z?:number,w?:number,nativeElements?:Float32Array);
 
 		/**
 		 * 根据缩放值缩放四元数
@@ -13266,13 +13105,6 @@ enum IndexFormat {
 		fromArray(array:any[],offset?:number):void;
 
 		/**
-		 * 写入Array数组
-		 * @param array 数组。
-		 * @param offset 数组偏移。
-		 */
-		toArray(array:Float32Array,offset?:number):void;
-
-		/**
 		 * 克隆。
 		 * @param destObject 克隆源。
 		 */
@@ -13503,7 +13335,7 @@ enum IndexFormat {
 		 * @param z Z轴坐标。
 		 */
 
-		constructor(x?:number,y?:number,z?:number);
+		constructor(x?:number,y?:number,z?:number,nativeElements?:Float32Array);
 
 		/**
 		 * 设置xyz值。
@@ -13519,13 +13351,6 @@ enum IndexFormat {
 		 * @param offset 数组偏移。
 		 */
 		fromArray(array:any[],offset?:number):void;
-
-		/**
-		 * 写入Array数组
-		 * @param array 数组。
-		 * @param offset 数组偏移。
-		 */
-		toArray(array:Float32Array,offset?:number):void;
 
 		/**
 		 * 克隆。
@@ -13602,13 +13427,6 @@ enum IndexFormat {
 		 * @param offset 数组偏移。
 		 */
 		fromArray(array:any[],offset?:number):void;
-
-		/**
-		 * 写入Array数组
-		 * @param array 数组。
-		 * @param offset 数组偏移。
-		 */
-		toArray(array:Float32Array,offset?:number):void;
 
 		/**
 		 * 克隆。
@@ -15307,7 +15125,6 @@ enum IndexFormat {
 	 * <code>Simulation</code> 类用于创建物理模拟器。
 	 */
 	class CannonPhysicsSimulation  {
-		private static _cannonPhysicsSimulation:any;
 		static disableSimulation:boolean;
 
 		/**
@@ -15324,6 +15141,12 @@ enum IndexFormat {
 		 * 物理模拟器帧的间隔时间:通过减少fixedTimeStep可增加模拟精度，默认是1.0 / 60.0。
 		 */
 		fixedTimeStep:number;
+
+		/**
+		 * 是否进行连续碰撞检测。CCD
+		 */
+		get continuousCollisionDetection():boolean;
+		set continuousCollisionDetection(value:boolean);
 
 		/**
 		 * 获取重力。
@@ -16465,6 +16288,13 @@ enum TextureCubeFace {
 		static propertyNameToID(name:string):number;
 
 		/**
+		 * 通过宏属性动态修改AttributeMap
+		 * @param defineString 
+		 * @param attributeMap 
+		 */
+		static getAttributeMapByDefine(defineString:string[],attributeMap:any):any;
+
+		/**
 		 * 添加函数库引用。
 		 * @param fileName 文件名字。
 		 * @param txt 文件内容
@@ -16724,7 +16554,7 @@ enum TextureCubeFace {
 		 * 克隆。
 		 * @param destObject 克隆源。
 		 */
-		cloneTo(destObject:ShaderData):void;
+		cloneTo(destObject:any):void;
 
 		/**
 		 * 克隆。
@@ -16768,7 +16598,7 @@ enum TextureCubeFace {
 		 */
 		get renderState():RenderState;
 
-		constructor(owner:SubShader,vs:string,ps:string,stateMap:{[key:string]:number;});
+		constructor(owner:SubShader,vs:string,ps:string,stateMap:object);
 
 		/**
 		 * @private 
@@ -16933,7 +16763,7 @@ enum TextureCubeFace {
 		 * @param stateMap 
 		 * @param pipelineMode 渲染管线模式。
 		 */
-		addShaderPass(vs:string,ps:string,stateMap?:{[key:string]:number;},pipelineMode?:string):ShaderPass;
+		addShaderPass(vs:string,ps:string,stateMap?:object,pipelineMode?:string):ShaderPass;
 	}
 
 enum ShadowLightType {
@@ -16949,6 +16779,9 @@ enum ShadowLightType {
 	 * <code>TextMesh</code> 类用于创建文本网格。
 	 */
 	class TextMesh  {
+		private static _indexBuffer:any;
+		private _vertices:any;
+		private _vertexBuffer:any;
 		private _text:any;
 		private _fontSize:any;
 		private _color:any;
@@ -16994,6 +16827,9 @@ enum ShadowLightType {
 		 */
 
 		constructor();
+		private _createVertexBuffer:any;
+		private _resizeVertexBuffer:any;
+		private _addChar:any;
 	}
 
 	/**
@@ -20542,17 +20378,17 @@ const enum VIDEOTYPE {
 		/**
 		 * @private 
 		 */
-		protected static area:HTMLTextAreaElement;
+		protected static area:any;
 
 		/**
 		 * @private 
 		 */
-		protected static inputElement:HTMLInputElement|HTMLTextAreaElement;
+		protected static inputElement:any;
 
 		/**
 		 * @private 
 		 */
-		protected static inputContainer:HTMLDivElement;
+		protected static inputContainer:any;
 
 		/**
 		 * @private 
@@ -20640,7 +20476,7 @@ const enum VIDEOTYPE {
 		/**
 		 * 获取对输入框的引用实例。
 		 */
-		get nativeInput():HTMLInputElement|HTMLTextAreaElement;
+		get nativeInput():any;
 		private _onUnDisplay:any;
 		private _onMouseDown:any;
 		private static stageMatrix:any;
@@ -21239,7 +21075,7 @@ const enum VIDEOTYPE {
 		 * 加载模式设置uimap
 		 * @param url uimapJosn的url
 		 */
-		static setUIMap(url:string):void;
+		static setUIMap(url:any):void;
 
 		/**
 		 * @private 兼容老项目装载场景视图。用于加载模式。
@@ -24911,7 +24747,7 @@ const enum VIDEOTYPE {
 		 * @private 滤镜类型。
 		 */
 		get type():number;
-		static _filter:(this:RenderSprite,sprite:Sprite,context:Context,x:number,y:number) =>void;
+		static _filter:(sprite:Sprite,context:Context,x:number,y:number) =>void;
 	}
 
 	/**
@@ -26190,7 +26026,7 @@ const enum glTFTextureWrapMode {
 	 */
 	class HTMLDocument  {
 		static document:HTMLDocument;
-		all:{[key:string]:HTMLElement;};
+		all:HTMLElement[];
 		styleSheets:any;
 		getElementById(id:string):HTMLElement;
 		setElementById(id:string,e:HTMLElement):void;
@@ -32535,11 +32371,6 @@ enum HTMLElementType {
 		/**
 		 * @private 
 		 */
-		private _replaceWebglcall:any;
-
-		/**
-		 * @private 
-		 */
 		private _enterFrame:any;
 
 		/**
@@ -33314,7 +33145,7 @@ enum FilterMode {
 		/**
 		 * 获取texture实例
 		 */
-		getTexture():Texture|null|RenderTexture2D;
+		getTexture():Texture;
 
 		/**
 		 * 把图片转换为base64信息
@@ -33889,7 +33720,7 @@ enum RenderTextureDepthFormat {
 		/**
 		 * 通过url强制恢复bitmap。
 		 */
-		recoverBitmap(onok?:() =>void):void;
+		recoverBitmap(onok?:Function):void;
 
 		/**
 		 * 强制释放Bitmap,无论是否被引用。
@@ -34196,7 +34027,7 @@ enum WarpMode {
 		 * @param minNum 最小值
 		 * @param maxNum 最大值
 		 */
-		static randRange(minNum:number,maxNum:number):number;
+		static randRange(minNum:any,maxNum:any):number;
 
 		/**
 		 * @private 请求出错侦的听处理函数。
@@ -40300,7 +40131,7 @@ enum WarpMode {
 		/**
 		 * @private 
 		 */
-		static mainCanvas:HTMLCanvas;
+		static mainCanvas:any;
 
 		/**
 		 * @private 
@@ -40316,12 +40147,6 @@ enum WarpMode {
 		 * @private 
 		 */
 		static measureText:Function;
-
-		/**
-		 * 获取是否为小游戏环境
-		 * @returns onMiniGame || onBDMiniGame || onQGMiniGame || onKGMiniGame || onVVMiniGame || onAlipayMiniGame || onQQMiniGame || onBLMiniGame || onTTMiniGame || onHWMiniGame || onTBMiniGame
-		 */
-		static get _isMiniGame():boolean;
 
 		/**
 		 * 创建浏览器原生节点。
@@ -44086,7 +43911,7 @@ enum WarpMode {
 
 	class Submit extends SubmitBase  {
 		protected static _poolSize:number;
-		protected static POOL:Submit[];
+		protected static POOL:any[];
 
 		constructor(renderType?:number);
 
@@ -44159,7 +43984,6 @@ enum WarpMode {
 	 */
 	class SubmitCanvas extends SubmitBase  {
 		canv:Context;
-		static POOL:SubmitCanvas[];
 		static create(canvas:any,alpha:number,filters:any[]):SubmitCanvas;
 
 		constructor();
@@ -44178,9 +44002,10 @@ enum WarpMode {
 		 * @override 
 		 */
 		getRenderType():number;
+		static POOL:any;
 	}
 	class SubmitCMD implements ISubmit  {
-		static POOL:SubmitCMD[];
+		static POOL:any;
 		fun:Function;
 		args:any[];
 
@@ -44215,7 +44040,7 @@ enum WarpMode {
 		srcRT:RenderTexture2D;
 
 		constructor();
-		static POOL:SubmitTarget[];
+		static POOL:any;
 		renderSubmit():number;
 		blend():void;
 		getRenderType():number;
@@ -44288,9 +44113,9 @@ enum WarpMode {
 		private static transChars:any;
 		characterMapContains(c:number):boolean;
 		getCharRep(c:number):boolean;
-		getCombCharRep(c1:number,c2:number):boolean;
-		isTransparent(c:number):boolean;
-		getOriginalCharsFromCode(code:number):string;
+		getCombCharRep(c1:any,c2:any):boolean;
+		isTransparent(c:any):boolean;
+		getOriginalCharsFromCode(code:any):string;
 
 		/**
 		 * 转换函数。从normal转到presentB
@@ -44517,6 +44342,8 @@ enum WarpMode {
 		private static pixelBBX:any;
 		private mapFont:any;
 		private fontID:any;
+		private mapColor:any;
+		private colorID:any;
 		private fontScaleX:any;
 		private fontScaleY:any;
 		private _curStrPos:any;
@@ -44814,7 +44641,7 @@ enum WarpMode {
 		funnames:string;
 
 		constructor(txt:string);
-		getWith(name?:string|null):string;
+		getWith(name?:string):string;
 		getFunsScript(funsdef:string):string;
 	}
 	class MatirxArray  {
@@ -45055,9 +44882,9 @@ enum WarpMode {
 		/**
 		 * @private 一个初始化的 <code>Matrix</code> 对象，不允许修改此对象内容。
 		 */
-		static EMPTYMAT4_ARRAY:number[];
-		static TEMPMAT4_ARRAY:number[];
-		static worldMatrix4:number[];
+		static EMPTYMAT4_ARRAY:any[];
+		static TEMPMAT4_ARRAY:any[];
+		static worldMatrix4:any[];
 		static worldMatrix:Matrix;
 		static matWVP:any;
 		static worldAlpha:number;
@@ -45185,7 +45012,6 @@ enum WarpMode {
 	 * @private 
 	 */
 	class WebGLContext  {
-		static getUniformMaxVector():number;
 	}
 
 }

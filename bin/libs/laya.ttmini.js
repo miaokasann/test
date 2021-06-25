@@ -1062,7 +1062,6 @@ window.ttMiniGame = function (exports, Laya) {
 	        Laya.Loader.prototype._loadHttpRequestWhat = MiniLoader.prototype._loadHttpRequestWhat;
 	        Laya.LocalStorage._baseClass = MiniLocalStorage;
 	        MiniLocalStorage.__init__();
-	        Laya.Config.useRetinalCanvas = true;
 	        TTMiniAdapter.window.tt.onMessage && TTMiniAdapter.window.tt.onMessage(TTMiniAdapter._onMessage);
 	    }
 	    static _onMessage(data) {

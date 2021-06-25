@@ -121,46 +121,47 @@ export default class CameraControlScript extends Laya.Script3D {
             //     speedX = speedZ = 0;
             //     constValue.cameraTranslate = new Laya.Vector3(speedX,0,speedZ);
             // }
-        } else if (!isNaN(this.lastMouseX) && !isNaN(this.lastMouseY) && this.isMouseDown && !JoyStick._isTouchMove && !constValue.isClickVideoBtn) {
-            //鼠标点击 摇杆以外区域
-            this.posX = this.point.x = Laya.MouseManager.instance.mouseX;
-            this.posY = this.point.y = Laya.MouseManager.instance.mouseY;
-            //产生射线
-            this.camera.viewportPointToRay(this.point,this._ray);
-            //拿到射线碰撞的物体
-            this.camera.parent.scene.physicsSimulation.rayCast(this._ray,this.outs);
-            //如果碰撞到物体
-            // if (this.outs.succeeded && this.outs.collider.owner.name == "dimianl")
-            // {   
-            //     if(this.touchMove != undefined && !this.touchMove) {
-            //         console.log(this.outs.point)
-            //         console.log(this.camera.transform.position)
-            //         console.log("x",this.outs.point.x - this.camera.transform.position.x)
-            //         console.log("z",this.outs.point.z - this.camera.transform.position.z)
-            //         // var x = (this.outs.point.x - this.camera.transform.position.x) * elapsedTime * .001 * this.moveSpeed;
-            //         // var z = (this.outs.point.z - this.camera.transform.position.z) * elapsedTime * .001 * this.moveSpeed
-            //         // constValue.cameraTranslate = new Laya.Vector3(x,0,z)
-            //         // Laya.timer.frameLoop(10,this,function(){
-            //             this.moveRight((this.outs.point.x - this.camera.transform.position.x) * elapsedTime * .001 * this.moveSpeed)
-            //             this.moveForward((this.outs.point.z - this.camera.transform.position.z) * elapsedTime * .001 * this.moveSpeed)
-            //         // });
-                    
-            //     } else {
-            //         constValue.cameraTranslate = new Laya.Vector3(0,0,0);
-            //     }
-            // }
-
-            var offsetX = Laya.stage.mouseX - this.lastMouseX;
-			var offsetY = Laya.stage.mouseY - this.lastMouseY;
-				
-			var yprElem = this.yawPitchRoll;
-			yprElem.x += offsetX * this.rotaionSpeed * elapsedTime;
-			yprElem.y += offsetY * this.rotaionSpeed * elapsedTime;
-			this.updateRotation();
-		
-            this.lastMouseX = Laya.stage.mouseX;
-            this.lastMouseY = Laya.stage.mouseY;
         } 
+        // else if (!isNaN(this.lastMouseX) && !isNaN(this.lastMouseY) && this.isMouseDown && !JoyStick._isTouchMove && !constValue.isClickVideoBtn) {
+        //     //鼠标点击 摇杆以外区域
+        //     this.posX = this.point.x = Laya.MouseManager.instance.mouseX;
+        //     this.posY = this.point.y = Laya.MouseManager.instance.mouseY;
+        //     //产生射线
+        //     this.camera.viewportPointToRay(this.point,this._ray);
+        //     //拿到射线碰撞的物体
+        //     this.camera.parent.scene.physicsSimulation.rayCast(this._ray,this.outs);
+        //     //如果碰撞到物体
+        //     // if (this.outs.succeeded && this.outs.collider.owner.name == "dimianl")
+        //     // {   
+        //     //     if(this.touchMove != undefined && !this.touchMove) {
+        //     //         console.log(this.outs.point)
+        //     //         console.log(this.camera.transform.position)
+        //     //         console.log("x",this.outs.point.x - this.camera.transform.position.x)
+        //     //         console.log("z",this.outs.point.z - this.camera.transform.position.z)
+        //     //         // var x = (this.outs.point.x - this.camera.transform.position.x) * elapsedTime * .001 * this.moveSpeed;
+        //     //         // var z = (this.outs.point.z - this.camera.transform.position.z) * elapsedTime * .001 * this.moveSpeed
+        //     //         // constValue.cameraTranslate = new Laya.Vector3(x,0,z)
+        //     //         // Laya.timer.frameLoop(10,this,function(){
+        //     //             this.moveRight((this.outs.point.x - this.camera.transform.position.x) * elapsedTime * .001 * this.moveSpeed)
+        //     //             this.moveForward((this.outs.point.z - this.camera.transform.position.z) * elapsedTime * .001 * this.moveSpeed)
+        //     //         // });
+                    
+        //     //     } else {
+        //     //         constValue.cameraTranslate = new Laya.Vector3(0,0,0);
+        //     //     }
+        //     // }
+
+        //     var offsetX = Laya.stage.mouseX - this.lastMouseX;
+		// 	var offsetY = Laya.stage.mouseY - this.lastMouseY;
+				
+		// 	var yprElem = this.yawPitchRoll;
+		// 	yprElem.x += offsetX * this.rotaionSpeed * elapsedTime;
+		// 	yprElem.y += offsetY * this.rotaionSpeed * elapsedTime;
+		// 	this.updateRotation();
+		
+        //     this.lastMouseX = Laya.stage.mouseX;
+        //     this.lastMouseY = Laya.stage.mouseY;
+        // } 
         // else if(constValue.isTurning) {
         //     constValue.cameraRotate = new Laya.Vector3(0,.001 * elapsedTime * constValue.turnSpeed,0);
         //     constValue.cameraTranslate = new Laya.Vector3(0,0,0);
